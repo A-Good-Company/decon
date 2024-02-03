@@ -9,7 +9,7 @@ model = WhisperModel(model_size, device="cuda", compute_type="float16")
 
 file_path = input("Enter your file path: ")
 
-segments, info = model.transcribe(file_path, beam_size=5)
+segments, info = model.transcribe(file_path, language='hi')
 
 print("Detected language '%s' with probability %f" % (info.language, info.language_probability))
 

@@ -36,6 +36,10 @@ This ui will let you design and execute advanced stable diffusion pipelines usin
 - Nodes/graph/flowchart interface to experiment and create complex Stable Diffusion workflows without needing to code anything.
 
 
+https://v2.vuejs.org/v2/examples/
+
+
+
 
 
 The comfyUI's power comes from 
