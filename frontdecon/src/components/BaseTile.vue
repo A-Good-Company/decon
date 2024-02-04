@@ -2,13 +2,14 @@
     <div class="base-tile">
         <h3>Tile #{{ this.myKey }}</h3>
         <p>{{ content }}</p>
-        <button @click="close">Close</button>
+        <button class="closeButton" @click="close">Close</button>
         <button @click="process">Process</button>
         <button @click="move">Move</button>
     </div>
 </template>
 
-
+<style scoped>
+</style>
 
 <script>
 export default {
@@ -35,8 +36,31 @@ export default {
 
 
 <style scoped>
+button{
+padding: 2px;
+border-radius: 10%; 
+padding-right: 4px;
+background-color: rgb(124, 204, 104); 
+color: white; 
+}
+.closeButton{
+padding: 2px;
+border-radius: 10%; 
+padding-right: 4px;
+background-color: blue; 
+color: white; 
+}
+.closeButton:hover{
+background-color: darkblue;
+}
+
+h3{
+font-weight: bold;
+font-size: 2em;
+}
+
+
 .timer {
-    /* .. */
 }
 </style>
 

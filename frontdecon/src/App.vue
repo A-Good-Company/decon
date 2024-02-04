@@ -11,6 +11,8 @@
   </div>
 </template>
 
+How to add tailwind css to make it centre aligned``
+
 
 <script>
 import BaseTile from './components/BaseTile.vue';
