@@ -1,6 +1,6 @@
 <template>
-    <div class="basetile">
-        <h3>Tile #{{ id }}</h3>
+    <div class="base-tile">
+        <h3>Tile #{{ this.myKey }}</h3>
         <p>{{ content }}</p>
         <button @click="close">Close</button>
         <button @click="process">Process</button>
@@ -9,17 +9,19 @@
 </template>
 
 
+
 <script>
 export default {
-    props : ['id'],
+    props : ['id', 'myKey'],
     data() {
         return {
-            interval: null
+            interval: null,
+            content: "Test message"
         };
     },
     methods: {
         close() {
-
+            this.$emit('close', this.myKey);
         },
         process() {
 
@@ -37,3 +39,4 @@ export default {
     /* .. */
 }
 </style>
+
