@@ -8,6 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@syncfusion/ej2-vue-richtexteditor": "^24.2.3",
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-vue": "^5.1.12",
     "autoprefixer": "^10.4.17",
     "core-js": "^3.8.3",
     "postcss": "^8.4.33",

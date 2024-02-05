@@ -2,7 +2,7 @@
   <div class="app">
     <button @click="addTile">Add Tile</button>
     <div class="tiles-grid">
-      <base-tile v-for="(tile, index) in tiles" 
+      <rich-text-tile v-for="(tile, index) in tiles" 
       :key="tile.id" 
       :myKey="tile.id"
       :id="index + 1" 
@@ -11,14 +11,15 @@
   </div>
 </template>
 
-How to add tailwind css to make it centre aligned``
 
 
 <script>
-import BaseTile from './components/BaseTile.vue';
+import RichTextTile from './components/RichTextTile.vue';
 
 export default {
-  components: {BaseTile},
+  components: {
+    'rich-text-tile': RichTextTile,
+  },
 
   data() {
     return {
@@ -44,7 +45,15 @@ export default {
 </script>
 
 
-<style scoped>
+<style>
+
+button{
+  padding: 2px;
+  border-radius: 10%; 
+  padding-right: 4px;
+  background-color: rgb(124, 204, 104); 
+  color: rgb(201, 81, 81); 
+}
 
 .app {
 
