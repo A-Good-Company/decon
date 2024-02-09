@@ -15,7 +15,9 @@
     "core-js": "^3.8.3",
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "wavesurfer.js": "^7.7.2",
+    "wavesurfer.js-vue": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
