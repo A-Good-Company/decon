@@ -1,10 +1,10 @@
 <template>
     <div>
       <input type="file" @change="handleFileUpload">
-      <video v-if="mediaType === 'video'" controls>
+      <video class="media-loader-video" v-if="mediaType === 'video'" controls>
         <source :src="fileSrc" type="video/mp4">
       </video>
-      <audio v-if="mediaType === 'audio'" controls>
+      <audio class="media-loader-audio" v-if="mediaType === 'audio'" controls>
           <source :src="fileSrc" type="audio/mpeg">
       </audio>
     </div>

@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    <universal-playback/>
     <button @click="addTile">Add Text Tile</button>
     <div class="tiles-grid">
       <rich-text-tile v-for="(tile, index) in tiles" 
@@ -25,11 +26,15 @@
 <script>
 import RichTextTile from './components/RichTextTile.vue';
 import VideoTile from './components/VideoTile.vue';
+// import AudioPlayer from './components/AudioPlayer.vue';
+import UniversalPlayback from './components/UniversalPlayback.vue';
 
 export default {
   components: {
     'rich-text-tile': RichTextTile,
-    'video-tile': VideoTile
+    'video-tile': VideoTile,
+    // 'audio-player': AudioPlayer,
+    'universal-playback': UniversalPlayback
   },
 
   data() {
