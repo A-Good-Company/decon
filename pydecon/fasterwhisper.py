@@ -35,5 +35,3 @@ while(True) :
     print("Subtitle file saved as: ", output_file_path)
 
 
-
-Create a websocket api that accepts file and optionally the language as input and streams the transcription back

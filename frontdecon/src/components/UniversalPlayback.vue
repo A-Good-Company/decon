@@ -1,19 +1,40 @@
-<template>
-    <div>
-      <!-- Playback Controls -->
-      <button @click="playMedia">Play</button>
-      <button @click="pauseMedia">Pause</button>
-      <input type="range" min="0" max="100" v-model="seekPosition" @input="seekMedia">
-  
-      <!-- Display Current State -->
-      <div>Current Position: {{ currentPosition }}%</div>
+  <template>
+    <div class="fixed bottom-0 left-0 w-full bg-orange-100  flex items-center">
+        <!-- Playback Controls -->
+        <button 
+            v-if="!isPlaying" 
+            class="bg-blue-500 text-white px-4 py-1 ml-2 rounded" 
+            @click="playMedia">
+            Play
+        </button>
+        
+        <button 
+            v-if="isPlaying" 
+            class="bg-blue-500 text-white px-4 py-1 ml-2 rounded" 
+            @click="pauseMedia">
+            Pause
+        </button>
+       
+        <div class="w-full mx-4">
+            <input 
+                type="range" 
+                min="0" 
+                max="100" 
+                v-model="seekPosition" 
+                @input="seekMedia" 
+                class="w-full">
+        </div>
+    
+        <!-- Display Current State -->
+        <div class="text-gray-700">Current Position: {{ currentPosition }}%</div>
     </div>
-  </template>
+</template>
   
   <script>
   export default {
     data() {
       return {
+        isPlaying: false,
         seekPosition: 0,
         currentPosition: 0,
         intervalId: null
@@ -22,15 +43,17 @@
     methods: {
       playMedia() {
         this.getMediaElements().forEach(el => {
-          if (!el.paused) return; // Skip if already playing
-          el.play();
+            if (!el.paused) return; // Skip if already playing
+            el.play();
         });
         this.startTracking();
-      },
-      pauseMedia() {
+        this.isPlaying = true; // Add this line
+    },
+    pauseMedia() {
         this.getMediaElements().forEach(el => el.pause());
         this.stopTracking();
-      },
+        this.isPlaying = false; // Add this line
+    },
       seekMedia() {
         const seekTime = (this.seekPosition / 100);
         

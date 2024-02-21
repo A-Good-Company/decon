@@ -1,28 +1,44 @@
 <template>
     <div class="video-tile">
-        <h3>Tile #{{ this.myKey }}</h3>
-        <media-loader/>
-        <button class="closeButton" @click="close">Close</button>
-        <button @click="process">Process</button>
-        <button @click="move">Move</button>
+        <h3><input type="text" v-model="header" class="tile-header" /></h3>
+
+        <video class="media-loader-video" v-if="mediaType === 'video'" controls>
+            <source :src="fileContent" :type="mime">
+        </video>
+        <audio class="media-loader-audio" v-if="mediaType === 'audio'" controls>
+            <source :src="fileContent" :type="mime">
+        </audio>
+
+        <my-button type="close" @clickButton="close">Close</my-button>
+        <my-button type="default" @clickButton="handleDetectText">
+            {{ isGuessing ? 'Guessing...' : 'Guess Words' }}</my-button>
+        <my-button type="default" @clickButton="handleIsolateStem">
+            {{ isIsolating ? 'Isolating...' : 'Isolate audio component' }}</my-button>
+
+        <my-button type="message" @clickButton="handleSettingsClick"> {{ $store.state.whisperLanguage }} </my-button>
     </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
 
 <script>
-import MediaLoader from './MediaLoader.vue';
+import MyButton from './items/ThemedButton.vue';
+import openai from '@/utils/openai';
+import replicate from '@/utils/replicate'
+
+
 export default {
     components: {
-        'media-loader' :MediaLoader
+        'my-button': MyButton
     },
 
-    props : ['id', 'myKey'],
+    props: ['id', 'myKey', 'mime', 'fileContent', 'file'],
     data() {
         return {
-            interval: null,
-            content: "Test message"
+            mediaType: this.mime.split('/')[0],
+            header: this.file.name,
+            isGuessing: false,
+            isIsolating: false
         };
     },
     methods: {
@@ -32,33 +48,51 @@ export default {
         process() {
 
         },
-        move() {
+        handleSettingsClick() {
+            this.$emit('openSettings');
+        },
+        async handleDetectText() {
+            this.isGuessing = true;
+            const result = await openai.detectText(this.file);
+            console.log(result);
+            this.$emit("newTextTile", result.srt);
+            this.$emit("newTextTile", result.text);
+            this.isGuessing = false;
+        },
+        async handleIsolateStem() {
+            this.isIsolating = true;
 
-        },       
+            const id = await replicate.submitReplicateSplitDemucs(this.file);
+
+            const intervalID = setInterval(async () => {
+                let status = await replicate.checkStatus(id);
+                if (status !== 'succeeded') {
+                    console.log(status);
+                } else {
+                    clearInterval(intervalID);
+                    const output = await replicate.getOutput(id);
+                    console.log('output', output);
+                    for (let title in output) {
+                        const url = output[title];
+                        console.log(url, title);
+                        if (url) {
+                            this.$emit("newMediaTile", {url: url, title: `${title} ${this.file.name}`})
+                        }
+                    }
+                }
+            }, 50000);
+        }
     },
+    mounted() {
+        console.log(this.mime)
+    }
 };
 </script>
 
 
 <style scoped>
-.closeButton{
-padding: 2px;
-border-radius: 10%; 
-padding-right: 4px;
-background-color: blue; 
-color: white; 
-}
-.closeButton:hover{
-background-color: darkblue;
-}
-
-h3{
-font-weight: bold;
-font-size: 2em;
-}
-
-
-.timer {
+h3 {
+    font-weight: bold;
+    font-size: 2em;
 }
 </style>
-

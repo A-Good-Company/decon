@@ -1,92 +1,192 @@
 <template>
+
   <div class="app">
-    <universal-playback/>
-    <button @click="addTile">Add Text Tile</button>
-    <div class="tiles-grid">
-      <rich-text-tile v-for="(tile, index) in tiles" 
-      :key="tile.id" 
-      :myKey="tile.id"
-      :id="index + 1" 
-      @close="handleClose"/>
+    <div class="tiles-grid richTextTile">
+      <rich-text-tile v-for="(tile, index) in tiles" :key="tile.id" :myKey="tile.id" :id="index + 1"
+        :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose" @openSettings="setupApp"
+        @newTile="addLoadedTile" />
     </div>
-    <button @click="addVidTile">Add Video Tile</button>
-    <div class="vid-tiles-grid">
-      <video-tile v-for="(tile, index) in vidTiles" 
-      :key="tile.id" 
-      :myKey="tile.id"
-      :id="index + 1" 
-      @close="handleVidClose"/>
+    <div class="vid-tiles-grid mediaTile">
+      <video-tile v-for="(tile, index) in mediaTiles" :key="tile.id" :myKey="tile.id" :id="index + 1" :mime="tile.mime"
+        :file="tile.file" :fileContent="tile.fileContent" :ref="`videoTile-${tile.id}`" @close="handleMediaClose"
+        @newTextTile="addLoadedTile" @newMediaTile="loadUrl" @openSettings="setupApp" />
     </div>
-    <media-loader/>
+    <media-loader />
+    <input @change="clickLoadFile" type="file" id="file">
+    <label
+      class="bg-gray-200 text-gray-900 text-l rounded-md min-h-[32px] px-3 py-0.5 font-semibold hover:bg-gray-400 m-1 w-2/4  flex justify-center items-center filelabel"
+      for="file">Load Media file</label>
+
+    <themed-button type="new" @clickButton="addTile">New Text Tile</themed-button>
+    <media-recorder @audioFile="loadFile" />
+    <app-settings v-if="showModal" @closeModal="showModal = false" @applySettings="saveSettings" />
+    <themed-button type="new" @clickButton="setupApp">Settings</themed-button>
+    <universal-playback v-if="mediaTiles.length >= 1" />
   </div>
 </template>
 
 
 
 <script>
-import RichTextTile from './components/RichTextTile.vue';
+import RichTextTile from './components/text/RichTextTile.vue';
 import VideoTile from './components/VideoTile.vue';
 // import AudioPlayer from './components/AudioPlayer.vue';
 import UniversalPlayback from './components/UniversalPlayback.vue';
+import ThemedButton from './components/items/ThemedButton.vue';
+import AppSettings from './components/AppSettings.vue';
+import MediaRecorder from './components/MediaRecorder.vue';
 
 export default {
   components: {
     'rich-text-tile': RichTextTile,
     'video-tile': VideoTile,
     // 'audio-player': AudioPlayer,
-    'universal-playback': UniversalPlayback
+    'universal-playback': UniversalPlayback,
+    'themed-button': ThemedButton,
+    'app-settings': AppSettings,
+    'media-recorder': MediaRecorder
   },
 
   data() {
     return {
       tiles: [],
       nextId: 1,
-      vidTiles: [],
-      nextVidId: 1
+      mediaTiles: [],
+      nextVidId: 1,
+      showModal: false,
+      mediaRecorder: null,
+      chunks: [],
+      audio: null,
+      isRecording: false
     };
   },
   methods: {
     addTile() {
-      this.tiles.push({ id: this.nextId++ });
+      this.addLoadedTile('');
+    },
+    addLoadedTile(content) {
+      this.tiles.push({ id: this.nextId++, initcontent: content });
+      this.$nextTick(() => {
+        this.$refs[`richTextTile-${this.nextId - 1}`][0].$el.focus();
+        this.$refs[`richTextTile-${this.nextId - 1}`][0].$el.scrollIntoView({ behavior: "smooth" });
+      });
     },
     handleClose(idToRemove) {
-      console.log("Befor removing")
-      console.log(this.tiles)
       this.tiles = this.tiles.filter(tile => tile.id !== idToRemove);
-      console.log(this.tiles)
-      console.log("after removing")
     },
-    addVidTile() {
-      this.vidTiles.push({ id: this.nextVidId++ });
+    clickLoadFile(event) {
+      this.loadFile(event.target.files[0]);
     },
-    handleVidClose(idToRemove) {
-      console.log("Befor removing")
-      console.log(this.vidTiles)
-      this.vidTiles = this.vidTiles.filter(tile => tile.id !== idToRemove);
-      console.log(this.vidTiles)
-      console.log("after removing")
-    }
-  }
+    loadUrl(event) {
+      fetch(event.url)
+        .then(res => res.blob())
+        .then(blob => {
+          // Here we determine the media type for the blob
+          const mediaType = blob.type;
+          const fileSrc = URL.createObjectURL(blob);
+
+          // Here we create a File object from blob
+          const file = new File([blob], event.title, {
+            type: mediaType,
+            lastModified: Date.now()
+          });
+
+          // Checking the media type
+          const mediaTypeValue = mediaType.split('/')[0];
+          if (mediaTypeValue === 'video' || mediaTypeValue === 'audio' || mediaTypeValue === 'image') {
+            this.addMediaTile(mediaType, fileSrc, file);
+          }
+        })
+        .catch(error => {
+          console.error('There has been a problem with your fetch operation:', error);
+        });
+    },
+    loadFile(file) {
+      let fileSrc = null;
+      let mediaType = null;
+      // If file size and type are valid, create a data URL
+      // and assign it to videoSrc data property
+      let reader = new FileReader();
+      reader.onload = e => {
+        fileSrc = e.target.result;
+        mediaType = file.type;
+        var mediaTypeValue = mediaType.split('/')[0];
+        if (mediaTypeValue == 'video' || mediaTypeValue == 'audio' || mediaTypeValue == 'image') {
+          this.addMediaTile(mediaType, fileSrc, file);
+          console.log(file);
+        }
+      };
+      reader.readAsDataURL(file);
+    },
+    addMediaTile(mediaType, fileContent, file) {
+      this.mediaTiles.push({ id: this.nextVidId++, mime: mediaType, fileContent: fileContent, file: file });
+      this.$nextTick(() => {
+        this.$refs[`videoTile-${this.nextVidId - 1}`][0].$el.focus();
+        this.$refs[`videoTile-${this.nextVidId - 1}`][0].$el.scrollIntoView({ behavior: "smooth" });
+      });
+    },
+    handleMediaClose(idToRemove) {
+      this.mediaTiles = this.mediaTiles.filter(tile => tile.id !== idToRemove);
+    },
+    onKeydown(e) {
+      if (e.altKey && (e.key === 'N' || e.key === 'n')) {
+        e.preventDefault();
+        this.addTile();
+      }
+    },
+    setupApp() {
+      console.log('This should open the settings!')
+      this.showModal = true;
+    },
+    saveSettings() {
+      console.log("settings config");
+    },
+  },
+  mounted() {
+    window.addEventListener('keydown', this.onKeydown);
+    document.title = '[De(on]struct)'; 
+    this.addLoadedTile("Decon\n---\n\nEmbedded in the Buddhist principle that all things are ultimately empty, Decon is an open-source technological tool that draws on this fundamental understanding to dissect specifics and parse out knowledge. By breaking things apart, we gain a more profound understanding of their core functions, allowing us to improve and innovate further. \n\nHarnessing the formidable capabilities of AI, Decon is a browser-based application designed to delve deep into the essence of things. Powered by OpenAI's APIs for text and automatic speech recognition (ASR), Decon applies artificial intelligence to analyse, decipher, and interpret data. For the dissection of audio into its primary components, it utilizes the Replicate API, providing a holistic and comprehensive understanding of the constituent elements. \n\nWith Decon, the pursuit of knowledge isn't about accumulation but about reduction, bringing us one step closer to genuine understanding and ingenious discovery.\n\nHowever, with great power comes great responsibility. Through Decon, you are accessing one of the most potent tools humans have ever created. Therefore, we urge you to utilize this resource with care, respect, and good intentions, always striving for the betterment of all beings.\n\n#### Translation in Hinglish\n\n")
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.keydownHandler);
+  },
 }
 </script>
 
 
 <style>
+.richTextTile {
+  width: 100%;
+}
 
-button{
+.mediaTile {
+  width: 100%;
+}
+
+button {
   padding: 2px;
-  border-radius: 10%; 
+  border-radius: 10%;
   padding-right: 4px;
-  background-color: rgb(124, 204, 104); 
-  color: rgb(201, 81, 81); 
+  background-color: rgb(124, 204, 104);
+  color: rgb(201, 81, 81);
 }
 
 .app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 50px;
 
 }
 
-.tiles-grid {
+.tiles-grid {}
 
+#file {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
 }
-
 </style>
