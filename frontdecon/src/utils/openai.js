@@ -34,8 +34,8 @@ const openAiService = {
             formdata.append("model", "whisper-1");
             formdata.append("timestamp_granularities[]", "segment");
             formdata.append("response_format", "verbose_json")
+            formdata.append("language", store.state.whisperLanguage)
             formdata.append("file", file);
-            formdata.append("langugage", store.state.whisperLanguage)
 
             const requestOptions = {
                 method: "POST",

@@ -16,7 +16,10 @@
                 </div>
 
                 <div v-if="isOpenAICharity" class="w-full px-3 mb-6 md:mb-0">
-                    <p class="text-orange-500 text-s italic">Please note, this notebook runs on limited funds. If possible, consider getting your own <a class="underline" href="https://platform.openai.com/api-keys" target="_blank">OpenAI API key</a> to help keep this resource free for those in need. Thanks.</p>
+                    <p class="text-orange-500 text-s italic">Please note, this notebook runs on limited funds. If
+                        possible, consider getting your own <a class="underline"
+                            href="https://platform.openai.com/api-keys" target="_blank">OpenAI API key</a> to help keep
+                        this resource free for those in need. Thanks.</p>
                 </div>
 
                 <div class="w-full px-3 mb-6 md:mb-0">
@@ -49,29 +52,27 @@
                 </div>
 
                 <div v-if="isReplicateCharity" class="w-full px-3 mb-6 md:mb-0">
-                    <p class="text-orange-500 text-s italic">Please note, this notebook runs on limited funds. If possible, consider getting your own <a class="underline" href="https://replicate.com/account/api-tokens" target="_blank">Replicate key</a> to help keep this resource free for those in need. Thanks.</p>
+                    <p class="text-orange-500 text-s italic">Please note, this notebook runs on limited funds. If
+                        possible, consider getting your own <a class="underline"
+                            href="https://replicate.com/account/api-tokens" target="_blank">Replicate key</a> to help
+                        keep this resource free for those in need. Thanks.</p>
                 </div>
-                
+
                 <div class="w-full px-3 mb-6 md:mb-0">
                     <label class="block uppercase tracking-wide text-gray-700 text-s font-bold mb-2" for="model">
                         Select Audio detection language
                     </label>
                     <div class="relative">
-                        <select v-model="whisperLanguage"
+                        <select v-model="selectedLanguage"
                             class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             id="asrlanguage">
                             <option disabled value="">Select Language</option>
-                            <option>en</option>
-                            <option>hi</option>
-                            <option>es</option>
-                            <option>fr</option>
-                            <option>ar</option>
-                            <option>kn</option>
-                            <option>ml</option>
-                            <option>pt</option>
+                            <option v-for="language in languages" :value="language.code" :key="language.code">{{ language.name }}</option>
+
                         </select>
                     </div>
                 </div>
+
 
                 <div class="flex flex-row w-full px-3 md:mb-0 justify-end">
                     <themed-button type="close" @click="closeModal">Close</themed-button>
@@ -81,6 +82,7 @@
         </div>
     </div>
 </template>
+
 <script>
 import { mapMutations, mapState } from 'vuex';
 import ThemedButton from './items/ThemedButton.vue';
@@ -95,7 +97,13 @@ export default {
             replicateKey: '',
             tokenCount: '',
             model: '',
-            whisperLanguage:''
+            selectedLanguage: '',
+            languages: [
+                { name: 'English', code: 'en' },
+                { name: 'Hindi', code: 'hi' },
+                { name: 'Spanish', code: 'es' },
+                // add all the languages you support
+            ],
         }
     },
     computed: {
@@ -118,6 +126,11 @@ export default {
             'updateWhisperLanguage'
         ]),
         apply() {
+            const selectedLanguage = this.languages.find(
+                language => language.code === this.selectedLanguage
+            );
+            this.updateWhisperLanguage(selectedLanguage ? selectedLanguage.code : null);
+
             if (this.openAIKey.trim() !== '') {
                 this.updateOpenAIKey(this.openAIKey);
             } else {
@@ -125,7 +138,6 @@ export default {
             }
             this.updateTokenCount(this.tokenCount);
             this.updateModel(this.model);
-            this.updateWhisperLanguage(this.whisperLanguage);
             this.closeModal();
         },
         closeModal() {
@@ -137,10 +149,15 @@ export default {
         this.replicateKey = this.isReplicateCharity ? '' : this.$store.state.replicateKey;
         this.tokenCount = this.$store.state.tokenCount;
         this.model = this.$store.state.model;
-        this.whisperLanguage = this.$store.state.whisperLanguage
+        const currentLanguage = this.languages.find(
+            language => language.code === this.$store.state.whisperLanguage
+        );
+
+        this.selectedLanguage = currentLanguage ? currentLanguage.code : "";
     }
 }
 </script>
+
 <style scoped>
 #modal {}
 
