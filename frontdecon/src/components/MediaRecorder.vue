@@ -1,7 +1,8 @@
 <template>
-    <div class="bg-gray-200 text-gray-900 text-l rounded-md min-h-[32px] px-3 py-0.5 font-semibold hover:bg-gray-400 m-1 w-2/4 items-center ">
-        <button type="new" @mousedown="initiateRecording()" @mouseup="stopRecording()">
-            {{ isRecording ? `Recording audio, release to stop` : 'Push to record Audio' }}
+    <div
+        class="bg-gray-200 text-gray-900 text-l rounded-md min-h-[32px] px-3 py-0.5 font-semibold hover:bg-gray-400 m-1 w-2/4 items-center ">
+        <button @click="initiateRecording">
+            {{ isRecording ? 'End Recording ('+ Math.floor(elapsedSeconds/60) + ':' + ('0' + elapsedSeconds%60).slice(-2) + ')' : 'Start Recording' }}
         </button>
         <select v-model="selectedDeviceId" class="max-w-full">
             <option v-for="device in devices" :key="device.deviceId" :value="device.deviceId">
@@ -21,16 +22,22 @@ export default {
             audio: null,
             isRecording: false,
             devices: [],
-            selectedDeviceId: null
+            selectedDeviceId: null,
+            elapsedSeconds: 0,
 
         }
     },
     methods: {
+
         async initiateRecording() {
-            if(this.devices.length === 0) {
-                await this.getDevices();
+            if (this.isRecording) {
+                this.stopRecording();
+            } else {
+                if (this.devices.length === 0) {
+                    await this.getDevices();
+                }
+                await this.startRecording();
             }
-            await this.startRecording();
         },
 
         async getDevices() {
@@ -53,21 +60,31 @@ export default {
             this.mediaRecorder.start();
             this.isRecording = true;
 
+            // start the timer
+            this.elapsedSeconds = 0;
+            this.intervalId = setInterval(() => {
+                this.elapsedSeconds += 1;
+            }, 1000);
+
             this.mediaRecorder.ondataavailable = (e) => {
                 this.chunks.push(e.data);
             };
         },
 
         stopRecording() {
-            if (!this.mediaRecorder) return;
-            this.mediaRecorder.stop();
-
-            this.mediaRecorder.onstop = () => {
-                this.finalizeRecording();
-            };
+            if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+                this.mediaRecorder.stop();
+                this.mediaRecorder.onstop = () => {
+                    this.finalizeRecording();
+                };
+            }
         },
 
         finalizeRecording() {
+            // stop the timer
+            clearInterval(this.intervalId);
+            this.elapsedSeconds = 0;
+
             this.audio = new Blob(this.chunks, { 'type': 'audio/webm; codecs=opus' });
             const timestamp = new Date().getTime();
 
