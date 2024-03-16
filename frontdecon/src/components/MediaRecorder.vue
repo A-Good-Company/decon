@@ -1,5 +1,6 @@
 <template>
-    <div class="bg-gray-200 text-gray-900 text-l rounded-md min-h-[32px] px-3 py-0.5 font-semibold hover:bg-gray-400 m-1 w-2/4  items-center ">
+    <div
+        class="bg-gray-200 text-gray-900 text-l rounded-md min-h-[32px] px-3 py-0.5 font-semibold hover:bg-gray-400 m-1 w-2/4  items-center ">
         <button type="new" @mousedown="startRecording()" @mouseup="stopRecording()">
             {{ isRecording ? `Recording audio, release to stop` : 'Push to record Audio' }}
         </button>
@@ -63,16 +64,26 @@ export default {
             console.log("enumerateDevices() not supported.");
         } else {
             // List cameras and microphones.
-            navigator.mediaDevices
-                .enumerateDevices()
-                .then((devices) => {
-                    this.devices = devices.filter(device => device.kind === 'audioinput'); // Filter the input devices only, update devices state
-                    this.selectedDeviceId = this.devices[0]?.deviceId; // Set the first device as the default selected device
+            navigator.mediaDevices.getUserMedia({ audio: true})
+                .then((stream) => {
+
+                    navigator.mediaDevices.enumerateDevices()
+                        .then((devices) => {
+                            this.devices = devices.filter(device => device.kind === 'audioinput');
+                            this.selectedDeviceId = this.devices[0]?.deviceId;
+
+                            // stop the streams
+                            if (stream) { stream.getTracks().forEach(track => track.stop()) }
+                        })
+                        .catch((err) => {
+                            console.error(`${err.name}: ${err.message}`);
+                        });
 
                 })
                 .catch((err) => {
                     console.error(`${err.name}: ${err.message}`);
-                });
+                })
+
         }
 
     }
