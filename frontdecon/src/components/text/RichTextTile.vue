@@ -5,8 +5,10 @@
             @textSelected="handleTextSelected" :readonly="isEditorReadOnly" />
         <my-button type="close" @clickButton="close">Close</my-button>
         <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button>
-        <my-button type="message" @clickButton="handleMessageClick">  {{  $store.state.model }} , {{  $store.state.tokenCount }} tokens</my-button>
-
+        <my-button type="message" @clickButton="handleMessageClick"> {{ $store.state.model }} , {{
+            $store.state.tokenCount }} tokens</my-button>
+        <input type="checkbox" id="pin-checkbox" value="Pinned" v-model="isPinned">
+        <label for="pin-checkbox">Pin this item</label>
     </div>
 </template>
 
@@ -25,7 +27,7 @@ export default {
         // 'rich-text-editor' : RichTextEditor,
         'markdown-editor': MarkdownEditor,
         // 'text-process-options': TextProcessOptions,
-        'my-button':MyButton
+        'my-button': MyButton
     },
 
     computed: {
@@ -33,14 +35,15 @@ export default {
             return this.lockContentUpdates; // returns true if the process button was clicked
         }
     },
-    props: ['id', 'myKey', 'initcontent'],
+    props: ['id', 'myKey', 'initcontent', 'initheader'],
     data() {
         return {
             interval: null,
             content: this.initcontent || '',
-            header: this.initcontent.substring(0, 8) || `Tile #${this.myKey}`,
+            header: this.initheader || this.initcontent.substring(0, 8) || `Tile #${this.myKey}`,
             selectedContent: '',
-            lockContentUpdates: false
+            lockContentUpdates: false,
+            isPinned: false
         };
     },
     methods: {
@@ -62,24 +65,37 @@ export default {
             this.selectedContent = selectedContent
         },
         async handleGenerateText() {
-            console.log("generate text clicked")
+            this.lockContentUpdates = true;
+
+            // generates text based on selected text or the entire content
+            const inputText = this.selectedContent.length > 0 ? this.selectedContent : this.content;
+            const result = await openai.generateText(inputText);
+            this.lockContentUpdates = false;
+
             if (this.selectedContent.length > 0) {
-                this.lockContentUpdates = true;
-                const result = await openai.generateText(this.selectedContent);
                 this.$emit('newTile', this.selectedContent + '\n' + result);
-                this.lockContentUpdates = false;
             } else {
-                this.lockContentUpdates = true
-                const result = await openai.generateText(this.content);
-                console.log("updating content:" + this.content + "\nWith result" + result);
                 this.content += result;
-                this.lockContentUpdates = false;
             }
         },
-        handleMessageClick(){
+        handleMessageClick() {
             this.$emit('openSettings');
         }
     },
+    watch: {
+        isPinned(newVal) {
+            if (newVal) {
+                //If checkbox is ticked, add item into pinnedItems
+                this.$store.commit('addPinnedItem', { id: this.myKey, content: this.content });
+            } else {
+                //If checkbox is unticked, remove the item from pinnedItems
+                this.$store.commit('removePinnedItem', this.myKey);
+            }
+        }
+    },
+    created() {
+        this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
+    }
 };
 </script>
 
@@ -108,5 +124,3 @@ h3 {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 </style>
-
-

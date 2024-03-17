@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import store from 'store'
 
+
 export default createStore({
   state: {
     openAIKey: store.get('openAIKey') || process.env.VUE_APP_OPENAI_DEFAULT_KEY,
@@ -9,38 +10,40 @@ export default createStore({
     isReplicateCharity: store.get('isReplicateCharity') || true,
     tokenCount: store.get('tokenCount') || 20,
     model: store.get('model') || 'gpt-4',
-    whisperLanguage: store.get('whisperLanguage') || 'en'
+    whisperLanguage: store.get('whisperLanguage') || 'en',
+    pinnedItems: store.get('pinnedItems') || {},
+
   },
   mutations: {
     updateOpenAIKey(state, key) {
-        if (key && key.trim() !== '') {
+      if (key && key.trim() !== '') {
 
         store.set('isOpenAICharity', false)
         state.isOpenAICharity = false
         state.openAIKey = key
         store.set('openAIKey', key)
-        } else {
+      } else {
         store.set('isOpenAICharity', true)
         state.isOpenAICharity = true
         state.openAIKey = process.env.VUE_APP_OPENAI_DEFAULT_KEY
         store.set('openAIKey', process.env.VUE_APP_OPENAI_DEFAULT_KEY)
 
-        }
+      }
     },
     updateReplicateKey(state, key) {
-        if (key && key.trim() !== '') {
+      if (key && key.trim() !== '') {
 
         store.set('isReplicateCharity', false)
         state.isReplicateCharity = false
         state.replicateKey = key
         store.set('replicateKey', key)
-        } else {
+      } else {
         store.set('isReplicateCharity', true)
         state.isReplicateCharity = true
         state.replicateKey = process.env.VUE_APP_REPLICATE_DEFAULT_KEY
         store.set('replicateKey', process.env.VUE_APP_REPLICATE_DEFAULT_KEY)
 
-        }
+      }
     },
     updateTokenCount(state, count) {
       state.tokenCount = count
@@ -53,6 +56,18 @@ export default createStore({
     updateWhisperLanguage(state, whisperLanguage) {
       state.whisperLanguage = whisperLanguage
       store.set('whisperLanguage', whisperLanguage)
+    },
+    addPinnedItem(state, item) {
+      state.pinnedItems[item.id] = item;
+      store.set('pinnedItems', state.pinnedItems);
+    },
+    removePinnedItem(state, id) {
+      delete state.pinnedItems[id];
+      store.set('pinnedItems', state.pinnedItems);
+    },
+    updatePinnedItem(state, updatedItem) {
+      state.pinnedItems[updatedItem.id] = updatedItem;
+      store.set('pinnedItems', state.pinnedItems);
     },
   }
 })
