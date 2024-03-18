@@ -159,8 +159,16 @@ export default {
 </script>
 
 <style scoped>
-#modal {}
+#modal {
+  overflow-y: auto;  /* Add scrolling on small devices */
+  max-height: 100%;  /* Adjust this to your needs */
+} 
 
+@media screen and (min-width:760px){
+  #modal {
+    max-height: none; /* optional: remove the max-height on large screens, adjust the width value according to your needs */
+  }
+}
 .modal-content {
     padding: 20px;
     background-color: white;
