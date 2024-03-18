@@ -8,7 +8,7 @@
         <my-button type="message" @clickButton="handleMessageClick"> {{ $store.state.model }} , {{
             $store.state.tokenCount }} tokens</my-button>
         <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
-        <label :for="'pin-checkbox-' + id">Pin this item</label>
+        <label :for="'pin-checkbox-' + id">Pin</label>
     </div>
 </template>
 
@@ -49,15 +49,19 @@ export default {
     },
     methods: {
         close() {
-            console.log("Test close button")
-            this.$emit('close', this.myKey);
+            if (this.isPinned) {
+                this.isPinned = false;
+            } else {
+                this.$emit('close', this.myKey);
+            }
         },
         handleUpdateContentFromEditor(newContent) {
             if (this.lockContentUpdates == false) {
                 console.log("handleUpdateFromEditor:" + newContent);
                 this.content = newContent;
-                this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: this.header});
-
+                if (this.isPinned) {
+                    this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: this.header });
+                }
             } else {
                 console.log("HandleupdateFromEditor disabled")
             }
@@ -88,10 +92,15 @@ export default {
         }
     },
     watch: {
+        header(newHeader) {
+            if (this.isPinned) {
+                this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: newHeader } )
+            }
+        },
         isPinned(newVal) {
             if (newVal) {
                 //If checkbox is ticked, add item into pinnedItems
-                this.$store.commit('addPinnedItem', { id: this.myKey, content: this.content, header: this.header});
+                this.$store.commit('addPinnedItem', { id: this.myKey, content: this.content, header: this.header });
             } else {
                 //If checkbox is unticked, remove the item from pinnedItems
                 this.$store.commit('removePinnedItem', this.myKey);
