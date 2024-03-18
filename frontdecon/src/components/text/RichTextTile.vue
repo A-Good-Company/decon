@@ -1,14 +1,14 @@
 <template>
     <div class="rich-text-tile">
-        <h3><input type="text" v-model="header" class="tile-header" /></h3>
+        <h3><input type="text" v-model="header" class="tile-header" @focus="selectAll" /></h3>
         <markdown-editor class="markdownEditor" :tileContent="content" @updateContent="handleUpdateContentFromEditor"
             @textSelected="handleTextSelected" :readonly="isEditorReadOnly" />
         <my-button type="close" @clickButton="close">Close</my-button>
         <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button>
         <my-button type="message" @clickButton="handleMessageClick"> {{ $store.state.model }} , {{
             $store.state.tokenCount }} tokens</my-button>
-        <input type="checkbox" id="pin-checkbox" value="Pinned" v-model="isPinned">
-        <label for="pin-checkbox">Pin this item</label>
+        <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
+        <label :for="'pin-checkbox-' + id">Pin this item</label>
     </div>
 </template>
 
@@ -20,6 +20,7 @@ import MarkdownEditor from './MarkdownEditor.vue';
 // import TextProcessOptions from './TextProcessOptions.vue';
 import openai from '@/utils/openai'
 import MyButton from '../items/ThemedButton.vue';
+import { format } from 'date-fns'
 // import {ref} from 'vue'
 
 export default {
@@ -40,7 +41,7 @@ export default {
         return {
             interval: null,
             content: this.initcontent || '',
-            header: this.initheader || this.initcontent.substring(0, 8) || `Tile #${this.myKey}`,
+            header: this.initheader || this.initcontent.substring(0, 10) || format(this.id, 'yyyyMMdd HHmm') + '.md',
             selectedContent: '',
             lockContentUpdates: false,
             isPinned: false
@@ -55,6 +56,7 @@ export default {
             if (this.lockContentUpdates == false) {
                 console.log("handleUpdateFromEditor:" + newContent);
                 this.content = newContent;
+                this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: this.header});
 
             } else {
                 console.log("HandleupdateFromEditor disabled")
@@ -80,13 +82,16 @@ export default {
         },
         handleMessageClick() {
             this.$emit('openSettings');
+        },
+        selectAll(event) {
+            event.target.select();
         }
     },
     watch: {
         isPinned(newVal) {
             if (newVal) {
                 //If checkbox is ticked, add item into pinnedItems
-                this.$store.commit('addPinnedItem', { id: this.myKey, content: this.content });
+                this.$store.commit('addPinnedItem', { id: this.myKey, content: this.content, header: this.header});
             } else {
                 //If checkbox is unticked, remove the item from pinnedItems
                 this.$store.commit('removePinnedItem', this.myKey);

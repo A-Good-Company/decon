@@ -2,7 +2,7 @@
 
   <div class="app">
     <div class="tiles-grid richTextTile">
-      <rich-text-tile v-for="(tile, index) in tiles" :key="tile.id" :myKey="tile.id" :id="index + 1"
+      <rich-text-tile v-for="tile in tiles" :key="tile.id" :myKey="tile.id" :id="tile.id"
         :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose" @openSettings="setupApp"
         @newTile="addLoadedTile" />
     </div>
@@ -65,10 +65,14 @@ export default {
       this.addLoadedTile('');
     },
     addLoadedTile(content) {
-      this.tiles.push({ id: this.nextId++, initcontent: content });
+      let uniqueId = Date.now();
+      this.addLoadedTileWithId(uniqueId, content)
+    },
+    addLoadedTileWithId(id, content) {
+      this.tiles.push({ id: id, initcontent: content });
       this.$nextTick(() => {
-        this.$refs[`richTextTile-${this.nextId - 1}`][0].$el.focus();
-        this.$refs[`richTextTile-${this.nextId - 1}`][0].$el.scrollIntoView({ behavior: "smooth" });
+        this.$refs[`richTextTile-${id}`][0].$el.focus();
+        this.$refs[`richTextTile-${id}`][0].$el.scrollIntoView({ behavior: "smooth" });
       });
     },
     handleClose(idToRemove) {
@@ -145,6 +149,10 @@ export default {
   mounted() {
     window.addEventListener('keydown', this.onKeydown);
     document.title = '[De(on]struct)';
+    Object.keys(this.$store.state.pinnedItems).forEach(id => {
+      const item = this.$store.state.pinnedItems[id];
+      this.addLoadedTileWithId(id, item.content);
+    });
     // this.addLoadedTile("Decon\n---\n\nEmbedded in the Buddhist principle that all things are ultimately empty, Decon is an open-source technological tool that draws on this fundamental understanding to dissect specifics and parse out knowledge. By breaking things apart, we gain a more profound understanding of their core functions, allowing us to improve and innovate further. \n\nHarnessing the formidable capabilities of AI, Decon is a browser-based application designed to delve deep into the essence of things. Powered by OpenAI's APIs for text and automatic speech recognition (ASR), Decon applies artificial intelligence to analyse, decipher, and interpret data. For the dissection of audio into its primary components, it utilizes the Replicate API, providing a holistic and comprehensive understanding of the constituent elements. \n\nWith Decon, the pursuit of knowledge isn't about accumulation but about reduction, bringing us one step closer to genuine understanding and ingenious discovery.\n\nHowever, with great power comes great responsibility. Through Decon, you are accessing one of the most potent tools humans have ever created. Therefore, we urge you to utilize this resource with care, respect, and good intentions, always striving for the betterment of all beings.\n\n#### Translation in Hinglish\n\n")
   },
   beforeUnmount() {
