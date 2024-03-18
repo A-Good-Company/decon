@@ -9,6 +9,7 @@
             $store.state.tokenCount }} tokens</my-button>
         <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
         <label :for="'pin-checkbox-' + id">Pin</label>
+        <my-button type="default" @clickButton="saveContent">Download</my-button>
     </div>
 </template>
 
@@ -89,12 +90,34 @@ export default {
         },
         selectAll(event) {
             event.target.select();
-        }
+        },
+        saveContent() {
+            const fileName = this.header;
+            const contentText = this.content;
+
+            // create a Blob from your content
+            const blob = new Blob([contentText], { type: 'text/plain;charset=utf-8' });
+
+            // create an object URL from the Blob
+            const url = URL.createObjectURL(blob);
+
+            // create an a element
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = url;
+
+            // This triggers the download
+            document.body.appendChild(link);
+            link.click();
+
+            // This removes the link from the body
+            document.body.removeChild(link);
+        },
     },
     watch: {
         header(newHeader) {
             if (this.isPinned) {
-                this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: newHeader } )
+                this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: newHeader })
             }
         },
         isPinned(newVal) {
