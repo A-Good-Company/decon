@@ -9,7 +9,7 @@
     <div class="vid-tiles-grid mediaTile">
       <video-tile v-for="(tile, index) in mediaTiles" :key="tile.id" :myKey="tile.id" :id="index + 1" :mime="tile.mime"
         :file="tile.file" :fileContent="tile.fileContent" :ref="`videoTile-${tile.id}`" @close="handleMediaClose"
-        @newTextTile="addLoadedTile" @newMediaTile="loadUrl" @openSettings="setupApp" />
+        @newTextTile="addLoadedTileWithIdHeader" @newMediaTile="loadUrl" @openSettings="setupApp" />
     </div>
     <media-loader />
     <input @change="clickLoadFile" type="file" id="file">
@@ -76,6 +76,7 @@ export default {
       });
     },
     addLoadedTileWithIdHeader(id, header, content) {
+      console.log(`id: ${id}, header: ${header}, content: ${content}`)
       this.tiles.push({ id: id, initheader: header,  initcontent: content });
       this.$nextTick(() => {
         this.$refs[`richTextTile-${id}`][0].$el.focus();

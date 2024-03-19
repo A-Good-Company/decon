@@ -12,6 +12,8 @@ export default createStore({
     model: store.get('model') || 'gpt-4',
     whisperLanguage: store.get('whisperLanguage') || 'en',
     pinnedItems: store.get('pinnedItems') || {},
+    enableLrcSubs: store.get('enableLrcSubs') || false,
+    enableSrtSubs: store.get('enableSrtSubs') || false,
 
   },
   mutations: {
@@ -68,6 +70,14 @@ export default createStore({
     updatePinnedItem(state, updatedItem) {
       state.pinnedItems[updatedItem.id] = updatedItem;
       store.set('pinnedItems', state.pinnedItems);
+    },
+    updateEnableLrcSubs(state, enableLrcSubs) {
+      state.enableLrcSubs = enableLrcSubs
+      store.set('enableLrcSubs', enableLrcSubs)
+    },
+    updateEnableSrtSubs(state, enableSrtSubs) {
+      state.enableSrtSubs = enableSrtSubs
+      store.set('enableSrtSubs', enableSrtSubs)
     },
   }
 })

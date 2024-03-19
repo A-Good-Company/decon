@@ -55,8 +55,13 @@ export default {
             this.isGuessing = true;
             const result = await openai.detectText(this.file);
             console.log(result);
-            this.$emit("newTextTile", result.srt);
-            this.$emit("newTextTile", result.text);
+            if (this.$store.state.enableLrcSubs){
+                this.$emit("newTextTile",Date.now(), `${this.header}.lrc`, result.lrc);
+            }
+            if (this.$store.state.enableSrtSubs){
+                this.$emit("newTextTile",Date.now(),  `${this.header}.srt`, result.srt);
+            }
+            this.$emit("newTextTile",Date.now(), `${this.header}.srt`,  result.text);
             this.isGuessing = false;
         },
         async handleIsolateStem() {
@@ -80,7 +85,7 @@ export default {
                         }
                     }
                 }
-            }, 50000);
+            }, 30000);
         }
     },
     mounted() {

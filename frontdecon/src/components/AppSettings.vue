@@ -67,12 +67,27 @@
                             class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             id="asrlanguage">
                             <option disabled value="">Select Language</option>
-                            <option v-for="language in languages" :value="language.code" :key="language.code">{{ language.name }}</option>
+                            <option v-for="language in languages" :value="language.code" :key="language.code">{{
+                        language.name }}</option>
 
                         </select>
                     </div>
                 </div>
 
+                <div class="w-full px-3 mb-6 md:mb-0 flex items-center">
+                    <input id="enableLrcSubs" type="checkbox" v-model="enableLrcSubs" class="mr-2">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                        for="enableLrcSubs">
+                        Enable LRC Subtitles
+                    </label>
+                </div>
+                <div class="w-full px-3 mb-6 md:mb-0 flex items-center">
+                    <input id="enableSrtSubs" type="checkbox" v-model="enableSrtSubs" class="mr-2">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                        for="enableSrtSubs">
+                        Enable SRT Subtitles
+                    </label>
+                </div>
 
                 <div class="flex flex-row w-full px-3 md:mb-0 justify-end">
                     <themed-button type="close" @click="closeModal">Close</themed-button>
@@ -104,6 +119,8 @@ export default {
                 { name: 'Spanish', code: 'es' },
                 // add all the languages you support
             ],
+            enableLrcSubs: false,
+            enableSrtSubs: false,
         }
     },
     computed: {
@@ -114,7 +131,9 @@ export default {
             'model',
             'isOpenAICharity',
             'isReplicateCharity',
-            'whisperLanguage'
+            'whisperLanguage',
+            'enableLrcSubs',
+            'enableSrtSubs'
         ])
     },
     methods: {
@@ -123,7 +142,9 @@ export default {
             'updateReplicateKey',
             'updateTokenCount',
             'updateModel',
-            'updateWhisperLanguage'
+            'updateWhisperLanguage',
+            'updateEnableLrcSubs',
+            'updateEnableSrtSubs'
         ]),
         apply() {
             const selectedLanguage = this.languages.find(
@@ -139,6 +160,9 @@ export default {
             this.updateTokenCount(this.tokenCount);
             this.updateModel(this.model);
             this.closeModal();
+
+            this.updateEnableLrcSubs(this.enableLrcSubs);
+            this.updateEnableSrtSubs(this.enableSrtSubs);
         },
         closeModal() {
             this.$emit("closeModal");
@@ -154,21 +178,27 @@ export default {
         );
 
         this.selectedLanguage = currentLanguage ? currentLanguage.code : "";
+        this.enableLrcSubs = this.$store.state.enableLrcSubs;
+        this.enableSrtSubs = this.$store.state.enableSrtSubs;
     }
 }
 </script>
 
 <style scoped>
 #modal {
-  overflow-y: auto;  /* Add scrolling on small devices */
-  max-height: 100%;  /* Adjust this to your needs */
-} 
-
-@media screen and (min-width:760px){
-  #modal {
-    max-height: none; /* optional: remove the max-height on large screens, adjust the width value according to your needs */
-  }
+    overflow-y: auto;
+    /* Add scrolling on small devices */
+    max-height: 100%;
+    /* Adjust this to your needs */
 }
+
+@media screen and (min-width:760px) {
+    #modal {
+        max-height: none;
+        /* optional: remove the max-height on large screens, adjust the width value according to your needs */
+    }
+}
+
 .modal-content {
     padding: 20px;
     background-color: white;

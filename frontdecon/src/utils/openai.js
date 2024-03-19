@@ -1,6 +1,8 @@
 import axios from 'axios';
 import store from '@/utils/stores'
 import FormData from 'form-data';
+import { format, fromUnixTime } from 'date-fns';
+
 
 const openAiService = {
     async generateText(prompt) {
@@ -49,7 +51,7 @@ const openAiService = {
                 requestOptions
             );
             const result = await response.text();
-            return this.jsonToSrt(result); // return the result instead of logging it to console
+            return this.jsonToSubs(result); // return the result instead of logging it to console
 
         } catch (error) {
             console.error('Error detecting text: ', error);
@@ -57,11 +59,12 @@ const openAiService = {
         }
     },
 
-    jsonToSrt(jsonString) {
+    jsonToSubs(jsonString) {
         const json = JSON.parse(jsonString);
         console.log("json" + json);
         const substext = json.text;
         let srt = '';
+        let lrc = '';
         for (let i = 0; i < json.segments.length; i++) {
             const segment = json.segments[i];
 
@@ -69,14 +72,18 @@ const openAiService = {
             const start = new Date(segment.start * 1000).toISOString().substr(11, 12);
             const end = new Date(segment.end * 1000).toISOString().substr(11, 12);
 
-            // Construct SRT text
+            // Construct LRC timestamp with date-fns
+            let start_mins = format(fromUnixTime(segment.start), 'mm');
+            let start_secs = format(fromUnixTime(segment.start), 'ss.SS');
+            const start_lrc = `[${start_mins}:${start_secs}]`
 
-            // Add to SRT string
-            srt += `${i + 1}\n${start} --> ${end}\n${segment.text}\n\n`;
+            // Construct SRT text and LRC text
+            srt += `${i + 1}\n${start} --> ${end}\n${segment.text.replace(/[\u{1F600}-\u{1F64F}]/gu, "")}\n\n`;
+            lrc += `${start_lrc}${segment.text.replace(/[\u{1F600}-\u{1F64F}]/gu, "")}\n`;
         }
 
-        // Return SRT
-        return { srt, text: substext };
+        // Return SRT and LRC
+        return { srt, lrc, text: substext };
     },
 };
 
