@@ -6,7 +6,6 @@ import { format, fromUnixTime } from 'date-fns';
 
 const openAiService = {
     async generateText(prompt) {
-        console.log(`Bearer ${store.state.openAIKey}`)
         try {
             const response = await axios.post('https://api.openai.com/v1/chat/completions', {
                 model: store.state.model, // Use the updated model from the reference
@@ -61,7 +60,6 @@ const openAiService = {
 
     jsonToSubs(jsonString) {
         const json = JSON.parse(jsonString);
-        console.log("json" + json);
         const substext = json.text;
         let srt = '';
         let lrc = '';

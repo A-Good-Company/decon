@@ -54,14 +54,15 @@ export default {
         async handleDetectText() {
             this.isGuessing = true;
             const result = await openai.detectText(this.file);
-            console.log(result);
+            const baseName = this.header.split('.').slice(0, -1).join('.') || this.header;
+            console.log(baseName);
             if (this.$store.state.enableLrcSubs){
-                this.$emit("newTextTile",Date.now(), `${this.header}.lrc`, result.lrc);
+                this.$emit("newTextTile",`${baseName}.lrc`, result.lrc);
             }
             if (this.$store.state.enableSrtSubs){
-                this.$emit("newTextTile",Date.now(),  `${this.header}.srt`, result.srt);
+                this.$emit("newTextTile",`${baseName}.srt`, result.srt);
             }
-            this.$emit("newTextTile",Date.now(), `${this.header}.srt`,  result.text);
+            this.$emit("newTextTile",`${baseName}.md`,  result.text);
             this.isGuessing = false;
         },
         async handleIsolateStem() {
