@@ -101,6 +101,8 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 import ThemedButton from './items/ThemedButton.vue';
+import languages from '../assets/languages.json';
+
 
 export default {
     components: {
@@ -113,12 +115,7 @@ export default {
             tokenCount: '',
             model: '',
             selectedLanguage: '',
-            languages: [
-                { name: 'English', code: 'en' },
-                { name: 'Hindi', code: 'hi' },
-                { name: 'Spanish', code: 'es' },
-                // add all the languages you support
-            ],
+            languages: languages,
             enableLrcSubs: false,
             enableSrtSubs: false,
         }
