@@ -15,7 +15,7 @@
     <input @change="clickLoadFile" type="file" id="file">
     <label
       class="bg-gray-200 text-gray-900 text-l rounded-md min-h-[32px] px-3 py-0.5 font-semibold hover:bg-gray-400 m-1 w-2/4  flex justify-center items-center filelabel"
-      for="file">Load Media file</label>
+      for="file">Load file</label>
 
     <themed-button type="new" @clickButton="addTile">New Text Tile</themed-button>
     <media-recorder @audioFile="loadFile" />
@@ -78,7 +78,7 @@ export default {
     addLoadedTileWithHeader(header, content) {
       let id = Date.now();
       console.log(`id: ${id}, header: ${header}, content: ${content}`)
-      this.tiles.push({ id: id, initheader: header,  initcontent: content });
+      this.tiles.push({ id: id, initheader: header, initcontent: content });
       this.$nextTick(() => {
         this.$refs[`richTextTile-${id}`][0].$el.focus();
         this.$refs[`richTextTile-${id}`][0].$el.scrollIntoView({ behavior: "smooth" });
@@ -86,7 +86,7 @@ export default {
     },
     addLoadedTileWithIdHeader(id, header, content) {
       console.log(`id: ${id}, header: ${header}, content: ${content}`)
-      this.tiles.push({ id: id, initheader: header,  initcontent: content });
+      this.tiles.push({ id: id, initheader: header, initcontent: content });
       this.$nextTick(() => {
         this.$refs[`richTextTile-${id}`][0].$el.focus();
         this.$refs[`richTextTile-${id}`][0].$el.scrollIntoView({ behavior: "smooth" });
@@ -123,21 +123,30 @@ export default {
         });
     },
     loadFile(file) {
-      let fileSrc = null;
-      let mediaType = null;
       // If file size and type are valid, create a data URL
       // and assign it to videoSrc data property
       let reader = new FileReader();
       reader.onload = e => {
-        fileSrc = e.target.result;
-        mediaType = file.type;
-        var mediaTypeValue = mediaType.split('/')[0];
-        if (mediaTypeValue == 'video' || mediaTypeValue == 'audio' || mediaTypeValue == 'image') {
-          this.addMediaTile(mediaType, fileSrc, file);
-          console.log(file);
+        const fileContent = e.target.result;
+        const fileExtension = file.name.split('.').pop();
+
+        if (['md', 'txt', 'srt', 'lrc'].includes(fileExtension)) {
+          this.addLoadedTileWithHeader(file.name, fileContent); // assuming file name is used as header
+        } else {
+          let mediaType = file.type;
+          const mediaTypeValue = mediaType.split('/')[0];
+          if (mediaTypeValue == 'video' || mediaTypeValue == 'audio' || mediaTypeValue == 'image') {
+            const fileSrc = URL.createObjectURL(file);
+            this.addMediaTile(mediaType, fileSrc, file);
+          }
         }
       };
-      reader.readAsDataURL(file);
+
+      if (['md', 'txt', 'srt', 'lrc'].includes(file.name.split('.').pop())) {
+        reader.readAsText(file);
+      } else {
+        reader.readAsDataURL(file);
+      }
     },
     addMediaTile(mediaType, fileContent, file) {
       this.mediaTiles.push({ id: this.nextVidId++, mime: mediaType, fileContent: fileContent, file: file });
@@ -204,7 +213,6 @@ button {
 
 }
 
-.tiles-grid {}
 
 #file {
   width: 0.1px;
