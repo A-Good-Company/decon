@@ -7,8 +7,9 @@
         <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button>
         <my-button type="message" @clickButton="handleMessageClick"> {{ $store.state.model }} , {{
             $store.state.tokenCount }} tokens</my-button>
-        <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
-        <label :for="'pin-checkbox-' + id">Pin</label>
+        <input v-if="!isPrompt" type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
+        <label v-if="!isPrompt" :for="'pin-checkbox-' + id">Pin</label>
+        <label v-else>Prompt</label>
         <my-button type="default" @clickButton="saveContent">Download</my-button>
     </div>
 </template>
@@ -35,6 +36,9 @@ export default {
     computed: {
         isEditorReadOnly: function () {
             return this.lockContentUpdates; // returns true if the process button was clicked
+        },
+        isPrompt: function () {
+            return this.content.includes("{context}");
         }
     },
     props: ['id', 'myKey', 'initcontent', 'initheader'],
@@ -45,7 +49,7 @@ export default {
             header: this.initheader || this.initcontent.substring(0, 10) || format(this.id, 'yyyyMMdd HHmm') + '.md',
             selectedContent: '',
             lockContentUpdates: false,
-            isPinned: false
+            isPinned: false,
         };
     },
     methods: {
@@ -62,6 +66,22 @@ export default {
                 this.content = newContent;
                 if (this.isPinned) {
                     this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: this.header });
+                }
+
+                // Check if the content includes {context}
+                if (this.content.includes("{context}")) {
+                    this.isPrompt = true;
+                    // save to prompts store
+                    try {
+                        // ensure that an item with the id doesn't already exist in the prompts list
+                        if (Object.keys(this.$store.state.prompts).includes(this.header)) {
+                            throw new Error("Prompt with this id already exists")
+                        } else {
+                            this.$store.commit('addPrompt', { id: this.header, content: this.content, header: this.header });
+                        }
+                    } catch (err) {
+                        console.log(err)
+                    }
                 }
             } else {
                 console.log("HandleupdateFromEditor disabled")
@@ -128,11 +148,29 @@ export default {
                 //If checkbox is unticked, remove the item from pinnedItems
                 this.$store.commit('removePinnedItem', this.myKey);
             }
-        }
+        },
+        isPrompt(newVal) {
+            if (newVal) {
+                // If newVal is true, save to prompts store
+                try {
+                    // ensure that an item with the id doesn't already exist in the prompts list
+                    if (Object.keys(this.$store.state.prompts).includes(this.header)) {
+                        throw new Error("Prompt with this id already exists")
+                    } else {
+                        this.$store.commit('addPrompt', { id: this.header, content: this.content});
+                    }
+                } catch (err) {
+                    console.log(err)
+                }
+            } else {
+                // If newVal is false, revert to the initial state or any other desired state
+                this.$store.commit('removePrompt', this.header);
+            }
+        },
     },
-    created() {
-        this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
-    }
+created() {
+    this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
+}
 };
 </script>
 

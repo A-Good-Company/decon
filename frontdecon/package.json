@@ -26,6 +26,7 @@
     "tailwindcss": "^3.4.1",
     "vue": "^3.2.13",
     "vue3-markdown": "^1.1.9",
+    "vuetify": "^3.5.11",
     "vuex": "^4.1.0",
     "wavesurfer.js": "^7.7.2",
     "wavesurfer.js-vue": "^1.0.0"
