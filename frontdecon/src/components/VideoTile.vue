@@ -1,35 +1,40 @@
 <template>
-    <div class="video-tile">
-        <h3><input type="text" v-model="header" class="tile-header" /></h3>
+    <v-card class="video-tile mx-1 my-1" variant="outlined">
+        <v-card-title class="headline">
 
-        <video class="media-loader-video" v-if="mediaType === 'video'" controls>
-            <source :src="fileContent" :type="mime">
-        </video>
-        <audio class="media-loader-audio" v-if="mediaType === 'audio'" controls>
-            <source :src="fileContent" :type="mime">
-        </audio>
+            <h4><input type="text" v-model="header" class="tile-header" /></h4>
+        </v-card-title>
+        <v-card-text>
+            <video class="media-loader-video" v-if="mediaType === 'video'" controls>
+                <source :src="fileContent" :type="mime">
+            </video>
+            <audio class="media-loader-audio" v-if="mediaType === 'audio'" controls>
+                <source :src="fileContent" :type="mime">
+            </audio>
 
-        <my-button type="close" @clickButton="close">Close</my-button>
-        <my-button type="default" @clickButton="handleDetectText">
-            {{ isGuessing ? 'Guessing...' : 'Guess Words' }}</my-button>
-        <my-button type="default" @clickButton="handleIsolateStem">
-            {{ isIsolating ? 'Isolating...' : 'Isolate audio component' }}</my-button>
-
-        <my-button type="message" @clickButton="handleSettingsClick"> {{ $store.state.whisperLanguage }} </my-button>
-    </div>
+            <v-btn density="default" flat class="mx-1" size="small" color="pink" @click="close">Close</v-btn>
+            <v-btn density="default" flat class="mx-1" size="small" color="blue" @click="handleDetectText">
+                {{ isGuessing ? 'Guessing...' : 'Guess Words' }}
+            </v-btn>
+            <v-btn variant="outlined" size="small" class="mx-1 my-1" @click="handleSettingsClick">
+                {{ $store.state.whisperLanguage }}
+            </v-btn>
+            <v-btn class="mx-1" flat size="small" color="green" @click="handleIsolateStem">
+                {{ isIsolating ? 'Isolating...' : 'Isolate audio component' }}
+            </v-btn>
+        </v-card-text>
+    </v-card>
 </template>
 
 <style scoped></style>
 
 <script>
-import MyButton from './items/ThemedButton.vue';
 import openai from '@/utils/openai';
 import replicate from '@/utils/replicate'
 
 
 export default {
     components: {
-        'my-button': MyButton
     },
 
     props: ['id', 'myKey', 'mime', 'fileContent', 'file'],
@@ -56,13 +61,13 @@ export default {
             const result = await openai.detectText(this.file);
             const baseName = this.header.split('.').slice(0, -1).join('.') || this.header;
             console.log(baseName);
-            if (this.$store.state.enableLrcSubs){
-                this.$emit("newTextTile",`${baseName}.lrc`, result.lrc);
+            if (this.$store.state.enableLrcSubs) {
+                this.$emit("newTextTile", `${baseName}.lrc`, result.lrc);
             }
-            if (this.$store.state.enableSrtSubs){
-                this.$emit("newTextTile",`${baseName}.srt`, result.srt);
+            if (this.$store.state.enableSrtSubs) {
+                this.$emit("newTextTile", `${baseName}.srt`, result.srt);
             }
-            this.$emit("newTextTile",`${baseName}.md`,  result.text);
+            this.$emit("newTextTile", `${baseName}.md`, result.text);
             this.isGuessing = false;
         },
         async handleIsolateStem() {
@@ -82,7 +87,7 @@ export default {
                         const url = output[title];
                         console.log(url, title);
                         if (url) {
-                            this.$emit("newMediaTile", {url: url, title: `${title} ${this.file.name}`})
+                            this.$emit("newMediaTile", { url: url, title: `${title} ${this.file.name}` })
                         }
                     }
                 }

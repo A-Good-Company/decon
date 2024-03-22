@@ -12,6 +12,7 @@ export default createStore({
     model: store.get('model') || 'gpt-4',
     whisperLanguage: store.get('whisperLanguage') || 'en',
     pinnedItems: store.get('pinnedItems') || {},
+    prompts: store.get('prompts') || {},
     enableLrcSubs: store.get('enableLrcSubs') || false,
     enableSrtSubs: store.get('enableSrtSubs') || false,
 
@@ -70,6 +71,22 @@ export default createStore({
     updatePinnedItem(state, updatedItem) {
       state.pinnedItems[updatedItem.id] = updatedItem;
       store.set('pinnedItems', state.pinnedItems);
+    },
+    addPrompt(state, item) {
+      if (Object.keys(state.prompts).includes(item.id)) {
+        throw new Error('Prompt with this id already exists.');
+      } else {
+        state.prompts[item.id] = item;
+        store.set('prompts', state.prompts);
+      }
+    },
+    removePrompt(state, id) {
+      delete state.prompts[id];
+      store.set('prompts', state.prompts);
+    },
+    updatePrompt(state, updatedItem) {
+      state.prompts[updatedItem.id] = updatedItem;
+      store.set('prompts', state.prompts);
     },
     updateEnableLrcSubs(state, enableLrcSubs) {
       state.enableLrcSubs = enableLrcSubs

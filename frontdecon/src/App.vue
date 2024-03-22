@@ -3,13 +3,13 @@
   <div class="app">
     <div class="tiles-grid richTextTile">
       <rich-text-tile v-for="tile in tiles" :key="tile.id" :myKey="tile.id" :id="tile.id" :initheader="tile.initheader"
-        :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose" @openSettings="setupApp"
-        @newTile="addLoadedTile" />
+        :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose" @openSettings="showSettings"
+        @newTile="addLoadedTile" @editPrompt="addLoadedTileWithHeader" />
     </div>
     <div class="vid-tiles-grid mediaTile">
       <video-tile v-for="(tile, index) in mediaTiles" :key="tile.id" :myKey="tile.id" :id="index + 1" :mime="tile.mime"
         :file="tile.file" :fileContent="tile.fileContent" :ref="`videoTile-${tile.id}`" @close="handleMediaClose"
-        @newTextTile="addLoadedTileWithHeader" @newMediaTile="loadUrl" @openSettings="setupApp" />
+        @newTextTile="addLoadedTileWithHeader" @newMediaTile="loadUrl" @openSettings="showSettings" />
     </div>
     <media-loader />
     <input @change="clickLoadFile" type="file" id="file">
@@ -19,8 +19,9 @@
 
     <themed-button type="new" @clickButton="addTile">New Text Tile</themed-button>
     <media-recorder @audioFile="loadFile" />
-    <app-settings v-if="showModal" @closeModal="showModal = false" @applySettings="saveSettings" />
-    <themed-button type="new" @clickButton="setupApp">Settings</themed-button>
+    <!-- <app-settings v-if="showModal" @closeModal="showModal = false" @applySettings="saveSettings" /> -->
+    <themed-button type="new" @clickButton="showSettings">Settings</themed-button>
+    <app-settings v-if="showModal" @hideSettings="hideSettings"/>
     <universal-playback v-if="mediaTiles.length >= 1" />
   </div>
 </template>
@@ -33,8 +34,9 @@ import VideoTile from './components/VideoTile.vue';
 // import AudioPlayer from './components/AudioPlayer.vue';
 import UniversalPlayback from './components/UniversalPlayback.vue';
 import ThemedButton from './components/items/ThemedButton.vue';
-import AppSettings from './components/AppSettings.vue';
+// import AppSettings from './components/AppSettings.vue';
 import MediaRecorder from './components/MediaRecorder.vue';
+import AppSettings from './components/AppSettings.vue';
 
 export default {
   components: {
@@ -43,8 +45,9 @@ export default {
     // 'audio-player': AudioPlayer,
     'universal-playback': UniversalPlayback,
     'themed-button': ThemedButton,
-    'app-settings': AppSettings,
-    'media-recorder': MediaRecorder
+    // 'app-settings': AppSettings,
+    'media-recorder': MediaRecorder,
+    'app-settings': AppSettings
   },
 
   data() {
@@ -164,12 +167,13 @@ export default {
         this.addTile();
       }
     },
-    setupApp() {
+    showSettings() {
       console.log('This should open the settings!')
       this.showModal = true;
     },
-    saveSettings() {
+    hideSettings() {
       console.log("settings config");
+      this.showModal = false;
     },
   },
   mounted() {
@@ -222,4 +226,4 @@ button {
   position: absolute;
   z-index: -1;
 }
-</style>
+</style>./components/AppSettings.vue
