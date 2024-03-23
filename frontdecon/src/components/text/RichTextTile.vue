@@ -5,6 +5,23 @@
             @textSelected="handleTextSelected" :readonly="isEditorReadOnly" />
         <my-button type="close" @clickButton="close">Close</my-button>
         <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button>
+        <my-button type="open-dialog" @clickButton="openDialog = true">Open Dialog</my-button>
+        <v-dialog v-model="openDialog" persistent max-width="500px">
+            <v-card>
+                <v-card-title>Prompts</v-card-title>
+                <v-card-text>
+                    <div v-for="id in Object.keys($store.state.prompts)" :key="id">
+                        {{ id }}
+                        <v-btn color="primary" @click="runPrompt(id)">Run</v-btn>
+                        <v-btn color="secondary" @click="editPrompt(id)">Edit</v-btn>
+                    </div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" text @click="openDialog = false">Close</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <my-button type="message" @clickButton="handleMessageClick"> {{ $store.state.model }} , {{
             $store.state.tokenCount }} tokens</my-button>
         <input v-if="!isPrompt" type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
@@ -50,6 +67,7 @@ export default {
             selectedContent: '',
             lockContentUpdates: false,
             isPinned: false,
+            openDialog: false
         };
     },
     methods: {
@@ -66,22 +84,6 @@ export default {
                 this.content = newContent;
                 if (this.isPinned) {
                     this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: this.header });
-                }
-
-                // Check if the content includes {context}
-                if (this.content.includes("{context}")) {
-                    this.isPrompt = true;
-                    // save to prompts store
-                    try {
-                        // ensure that an item with the id doesn't already exist in the prompts list
-                        if (Object.keys(this.$store.state.prompts).includes(this.header)) {
-                            throw new Error("Prompt with this id already exists")
-                        } else {
-                            this.$store.commit('addPrompt', { id: this.header, content: this.content, header: this.header });
-                        }
-                    } catch (err) {
-                        console.log(err)
-                    }
                 }
             } else {
                 console.log("HandleupdateFromEditor disabled")
@@ -133,11 +135,22 @@ export default {
             // This removes the link from the body
             document.body.removeChild(link);
         },
+        editPrompt(id) {
+            console.log(id);
+        },
+        runPrompt(id) {
+            console.log(id);
+        }
     },
     watch: {
-        header(newHeader) {
+        header(newHeader, oldHeader) {
             if (this.isPinned) {
                 this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: newHeader })
+            }
+            if (this.isPrompt) {
+                // Remove the old prompt and add a new prompt with the updated header ID
+                this.$store.commit('removePrompt', oldHeader);
+                this.$store.commit('addPrompt', { id: newHeader, content: this.content });
             }
         },
         isPinned(newVal) {
@@ -157,7 +170,7 @@ export default {
                     if (Object.keys(this.$store.state.prompts).includes(this.header)) {
                         throw new Error("Prompt with this id already exists")
                     } else {
-                        this.$store.commit('addPrompt', { id: this.header, content: this.content});
+                        this.$store.commit('addPrompt', { id: this.header, content: this.content });
                     }
                 } catch (err) {
                     console.log(err)
@@ -168,9 +181,9 @@ export default {
             }
         },
     },
-created() {
-    this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
-}
+    created() {
+        this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
+    }
 };
 </script>
 
