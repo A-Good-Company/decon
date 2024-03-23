@@ -5,8 +5,8 @@
             @textSelected="handleTextSelected" :readonly="isEditorReadOnly" />
         <my-button type="close" @clickButton="close">Close</my-button>
         <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button>
-        <my-button type="open-dialog" @clickButton="openDialog = true">Open Dialog</my-button>
-        <v-dialog v-model="openDialog" persistent max-width="500px">
+        <my-button type="open-dialog" @clickButton="openPromptsDialog = true">Open Dialog</my-button>
+        <v-dialog v-model="openPromptsDialog" persistent max-width="500px">
             <v-card>
                 <v-card-title>Prompts</v-card-title>
                 <v-card-text>
@@ -18,15 +18,15 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="green darken-1" text @click="openDialog = false">Close</v-btn>
+                    <v-btn color="green darken-1" text @click="openPromptsDialog = false">Close</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
         <my-button type="message" @clickButton="handleMessageClick"> {{ $store.state.model }} , {{
             $store.state.tokenCount }} tokens</my-button>
-        <input v-if="!isPrompt" type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
-        <label v-if="!isPrompt" :for="'pin-checkbox-' + id">Pin</label>
-        <label v-else>Prompt</label>
+        <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
+        <label :for="'pin-checkbox-' + id">Pin</label>
+        <label v-if="isPrompt"> Prompt</label>
         <my-button type="default" @clickButton="saveContent">Download</my-button>
     </div>
 </template>
@@ -67,7 +67,7 @@ export default {
             selectedContent: '',
             lockContentUpdates: false,
             isPinned: false,
-            openDialog: false
+            openPromptsDialog: false
         };
     },
     methods: {
@@ -84,6 +84,9 @@ export default {
                 this.content = newContent;
                 if (this.isPinned) {
                     this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: this.header });
+                }
+                if (this.isPrompt) {
+                    this.$store.commit('updatePrompt', { id: this.header, content: this.content });
                 }
             } else {
                 console.log("HandleupdateFromEditor disabled")
@@ -136,10 +139,20 @@ export default {
             document.body.removeChild(link);
         },
         editPrompt(id) {
-            console.log(id);
+            this.$emit("editPrompt", id, this.$store.state.prompts[id].content);
+            this.openPromptsDialog = false;
         },
-        runPrompt(id) {
-            console.log(id);
+        async runPrompt(id) {
+            let promptTemplate = this.$store.state.prompts[id].content;
+            const inputText = this.selectedContent.length > 0 ? this.selectedContent : this.content;
+
+            let queryPrompt = promptTemplate.replace(/\{\{context\}\}/g, inputText);
+
+            // generates text based on selected text or the entire content
+            const result = await openai.generateText(queryPrompt);
+            this.$emit('newTile', result);
+            this.openPromptsDialog = false;
+
         }
     },
     watch: {
