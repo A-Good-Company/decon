@@ -3,10 +3,18 @@
         <h3><input type="text" v-model="header" class="tile-header" @focus="selectAll" /></h3>
         <markdown-editor class="markdownEditor" :tileContent="content" @updateContent="handleUpdateContentFromEditor"
             @textSelected="handleTextSelected" :readonly="isEditorReadOnly" />
-        <my-button type="close" @clickButton="close">Close</my-button>
-        <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button>
-        <label>{{ wordCount }} Words</label>
-        <my-button type="open-dialog" @clickButton="openPromptsDialog = true">Open Dialog</my-button>
+        <!-- <my-button type="close" @clickButton="close">Close</my-button> -->
+        <v-btn density="default" flat class="mx-1" size="small" color="pink" @click="close">Close</v-btn>
+        <!-- <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button> -->
+        <v-btn density="default" flat class="mx-1" size="small" color="blue" @click="handleGenerateText">Hallucinate</v-btn>
+        <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">Run Prompts</v-btn>
+        <v-chip v-if="isPrompt" size="small" color="green">
+            Prompt
+        </v-chip>
+        <v-chip size="small" class="mx-1">
+            {{ wordCount }} Words
+        </v-chip>
+        <!-- <my-button type="open-dialog" @clickButton="openPromptsDialog = true">Open Dialog</my-button> -->
         <v-dialog v-model="openPromptsDialog" persistent max-width="500px">
             <v-card>
                 <v-card-title>Prompts</v-card-title>
@@ -23,12 +31,19 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <my-button type="message" @clickButton="handleMessageClick"> {{ $store.state.model }} , {{
-            $store.state.tokenCount }} tokens</my-button>
-        <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
+        <v-btn variant="outlined" size="small" class="mx-1" @click="handleMessageClick">
+            {{ $store.state.model }}, {{ $store.state.tokenCount }} tokens
+        </v-btn>
+        <!-- <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
         <label :for="'pin-checkbox-' + id">Pin</label>
-        <label v-if="isPrompt"> Prompt</label>
-        <my-button type="default" @clickButton="saveContent">Download</my-button>
+        <label v-if="isPrompt"> Prompt</label> -->
+        <v-chip size="small" color="purple">
+            <input type="checkbox" :id="'pin-checkbox-' + id" :value="isPinned ? 'Pinned' : 'Pin'" v-model="isPinned"
+                class="mr-2">
+            <label :for="'pin-checkbox-' + id">{{ isPinned ? 'Pinned' : 'Pin' }}</label>
+        </v-chip>
+        <!-- <my-button type="default" @clickButton="saveContent">Download</my-button> -->
+        <v-btn class="mx-1" size="small" flat color="purple" @click="saveContent">Download</v-btn>
     </div>
 </template>
 
@@ -39,7 +54,6 @@
 import MarkdownEditor from './MarkdownEditor.vue';
 // import TextProcessOptions from './TextProcessOptions.vue';
 import openai from '@/utils/openai'
-import MyButton from '../items/ThemedButton.vue';
 import { format } from 'date-fns'
 // import {ref} from 'vue'
 
@@ -48,7 +62,6 @@ export default {
         // 'rich-text-editor' : RichTextEditor,
         'markdown-editor': MarkdownEditor,
         // 'text-process-options': TextProcessOptions,
-        'my-button': MyButton
     },
 
     computed: {
