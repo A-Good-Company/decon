@@ -21,6 +21,7 @@
     <media-recorder @audioFile="loadFile" />
     <app-settings v-if="showModal" @closeModal="showModal = false" @applySettings="saveSettings" />
     <themed-button type="new" @clickButton="setupApp">Settings</themed-button>
+    <test-settings></test-settings>
     <universal-playback v-if="mediaTiles.length >= 1" />
   </div>
 </template>
@@ -35,6 +36,7 @@ import UniversalPlayback from './components/UniversalPlayback.vue';
 import ThemedButton from './components/items/ThemedButton.vue';
 import AppSettings from './components/AppSettings.vue';
 import MediaRecorder from './components/MediaRecorder.vue';
+import TestSettings from './components/TestSettings.vue';
 
 export default {
   components: {
@@ -44,7 +46,8 @@ export default {
     'universal-playback': UniversalPlayback,
     'themed-button': ThemedButton,
     'app-settings': AppSettings,
-    'media-recorder': MediaRecorder
+    'media-recorder': MediaRecorder,
+    'test-settings': TestSettings
   },
 
   data() {
