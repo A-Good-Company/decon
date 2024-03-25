@@ -5,6 +5,7 @@
             @textSelected="handleTextSelected" :readonly="isEditorReadOnly" />
         <my-button type="close" @clickButton="close">Close</my-button>
         <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button>
+        <label>{{ wordCount }} Words</label>
         <my-button type="open-dialog" @clickButton="openPromptsDialog = true">Open Dialog</my-button>
         <v-dialog v-model="openPromptsDialog" persistent max-width="500px">
             <v-card>
@@ -55,8 +56,11 @@ export default {
             return this.lockContentUpdates; // returns true if the process button was clicked
         },
         isPrompt: function () {
-            return this.content.includes("{context}");
-        }
+            return this.content.includes("{{context}}");
+        },
+        wordCount: function () {
+            return this.selectedContent ? this.selectedContent.split(' ').length : this.content.split(' ').length;
+        },
     },
     props: ['id', 'myKey', 'initcontent', 'initheader'],
     data() {
