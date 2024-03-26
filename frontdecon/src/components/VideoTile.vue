@@ -64,9 +64,11 @@ export default {
             if (this.$store.state.enableLrcSubs) {
                 this.$emit("newTextTile", `${baseName}.lrc`, result.lrc);
             }
+            await new Promise(resolve => setTimeout(resolve, 50)); //stopgap fix to avoid both tiles having the same id
             if (this.$store.state.enableSrtSubs) {
                 this.$emit("newTextTile", `${baseName}.srt`, result.srt);
             }
+            await new Promise(resolve => setTimeout(resolve, 50)); //stopgap fix to avoid both tiles having the same id
             this.$emit("newTextTile", `${baseName}.md`, result.text);
             this.isGuessing = false;
         },

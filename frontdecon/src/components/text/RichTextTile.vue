@@ -1,5 +1,5 @@
 <template>
-    <v-card class="rich-text-tile mx-1 my-1" variant="outlined">
+    <v-card class="rich-text-tile mx-1 my-1" :variant="tileVariant" :color="tileColor">
         <v-card-title class="headline">
             <h4><input type="text" v-model="header" class="tile-header" @focus="selectAll" /></h4>
         </v-card-title>
@@ -13,7 +13,7 @@
             <v-btn density="default" flat class="mx-1" size="small" color="blue"
                 @click="handleGenerateText">Hallucinate</v-btn>
             <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">Run Prompts</v-btn>
-            <v-chip v-if="isPrompt" size="small" color="green">
+            <v-chip v-if="isPrompt" size="small" color="green-darken-4">
                 Prompt
             </v-chip>
             <v-chip size="small" class="mx-1">
@@ -24,11 +24,19 @@
                 <v-card>
                     <v-card-title>Prompts</v-card-title>
                     <v-card-text>
-                        <div v-for="id in Object.keys($store.state.prompts)" :key="id">
-                            {{ id }}
-                            <v-btn color="primary" @click="runPrompt(id)">Run</v-btn>
-                            <v-btn color="secondary" @click="editPrompt(id)">Edit</v-btn>
-                        </div>
+                        <v-row v-for="id in Object.keys($store.state.prompts)" :key="id">
+                            <v-col cols="auto">
+                                <div>{{ id }}</div>
+                                <div class="subtitle"  style="font-size: 0.8em;">{{ $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                            <v-col cols="auto">
+                                <v-btn class="mx-1 my-1" flat size="small" color="primary"
+                                    @click="runPrompt(id)">Run</v-btn>
+                                <v-btn class="mx-1 my-1" flat size="small" color="secondary"
+                                    @click="editPrompt(id)">Edit</v-btn>
+                            </v-col>
+                        </v-row>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -90,7 +98,9 @@ export default {
             selectedContent: '',
             lockContentUpdates: false,
             isPinned: false,
-            openPromptsDialog: false
+            openPromptsDialog: false,
+            tileColor: 'default',
+            tileVariant: 'outlined'
         };
     },
     methods: {
@@ -176,7 +186,23 @@ export default {
             this.$emit('newTile', result);
             this.openPromptsDialog = false;
 
-        }
+        },
+        updateTileAppearance() {
+            console.log("Updating tile colors")
+            if (this.isPinned && this.isPrompt) {
+                this.tileVariant = 'outlined';
+                this.tileColor = 'green-darken-4';
+            } else if (this.isPinned && !this.isPrompt) {
+                this.tileVariant = 'outlined';
+                this.tileColor = 'purple';
+            } else if (!this.isPinned && this.isPrompt) {
+                this.tileVariant = 'elevated';
+                this.tileColor = 'light-green-lighten-5';
+            } else {
+                this.tileVariant = 'outlined';
+                this.tileColor = 'default';
+            }
+        },
     },
     watch: {
         header(newHeader, oldHeader) {
@@ -197,6 +223,7 @@ export default {
                 //If checkbox is unticked, remove the item from pinnedItems
                 this.$store.commit('removePinnedItem', this.myKey);
             }
+            this.updateTileAppearance();
         },
         isPrompt(newVal) {
             if (newVal) {
@@ -215,10 +242,12 @@ export default {
                 // If newVal is false, revert to the initial state or any other desired state
                 this.$store.commit('removePrompt', this.header);
             }
+            this.updateTileAppearance();
         },
     },
     created() {
         this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
+        this.updateTileAppearance();
     }
 };
 </script>
@@ -247,5 +276,4 @@ h3 {
     padding: 20px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
-
 </style>

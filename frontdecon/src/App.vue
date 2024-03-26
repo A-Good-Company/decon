@@ -226,4 +226,4 @@ button {
   position: absolute;
   z-index: -1;
 }
-</style>./components/AppSettings.vue
+</style>
