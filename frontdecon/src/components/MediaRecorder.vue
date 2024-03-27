@@ -85,11 +85,11 @@ export default {
             clearInterval(this.intervalId);
             this.elapsedSeconds = 0;
 
-            this.audio = new Blob(this.chunks, { 'type': 'audio/webm; codecs=opus' });
+            this.audio = new Blob(this.chunks, { 'type': 'audio/mpeg' });
             const timestamp = new Date().getTime();
 
-            const file = new File([this.audio], `recording_${timestamp}.webm`, {
-                type: 'audio/webm; codecs=opus',
+            const file = new File([this.audio], `recording_${timestamp}.mp3`, {
+                type: 'audio/mpeg',
                 lastModified: Date.now()
             });
 
