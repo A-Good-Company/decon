@@ -4,7 +4,7 @@
     <div class="tiles-grid richTextTile">
       <rich-text-tile v-for="tile in tiles" :key="tile.id" :myKey="tile.id" :id="tile.id" :initheader="tile.initheader"
         :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose" @openSettings="showSettings"
-        @newTile="addLoadedTile" @editPrompt="addLoadedTileWithHeader" />
+        @newTile="addLoadedTile" @newHeadedTile="addLoadedTileWithHeader" />
     </div>
     <div class="vid-tiles-grid mediaTile">
       <video-tile v-for="(tile, index) in mediaTiles" :key="tile.id" :myKey="tile.id" :id="index + 1" :mime="tile.mime"

@@ -172,7 +172,7 @@ export default {
             document.body.removeChild(link);
         },
         editPrompt(id) {
-            this.$emit("editPrompt", id, this.$store.state.prompts[id].content);
+            this.$emit("newHeadedTile", id, this.$store.state.prompts[id].content);
             this.openPromptsDialog = false;
         },
         async runPrompt(id) {
@@ -185,7 +185,7 @@ export default {
 
             // generates text based on selected text or the entire content
             const result = await openai.generateText(queryPrompt);
-            this.$emit('newTile', result);
+            this.$emit('newHeadedTile', `${id}-${this.header}`, result);
             this.lockContentUpdates = false;
 
         },
