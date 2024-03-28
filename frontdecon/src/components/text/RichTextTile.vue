@@ -177,6 +177,8 @@ export default {
         },
         async runPrompt(id) {
             let promptTemplate = this.$store.state.prompts[id].content;
+            this.openPromptsDialog = false;
+            this.lockContentUpdates = true;
             const inputText = this.selectedContent.length > 0 ? this.selectedContent : this.content;
 
             let queryPrompt = promptTemplate.replace(/\{\{context\}\}/g, inputText);
@@ -184,7 +186,7 @@ export default {
             // generates text based on selected text or the entire content
             const result = await openai.generateText(queryPrompt);
             this.$emit('newTile', result);
-            this.openPromptsDialog = false;
+            this.lockContentUpdates = false;
 
         },
         updateTileAppearance() {
