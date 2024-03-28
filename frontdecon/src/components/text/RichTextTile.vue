@@ -12,7 +12,7 @@
             <!-- <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button> -->
             <v-btn density="default" flat class="mx-1" size="small" color="blue"
                 @click="handleGenerateText">Hallucinate</v-btn>
-            <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">Run Prompts</v-btn>
+            <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">My Prompts</v-btn>
             <v-chip v-if="isPrompt" size="small" color="green-darken-4">
                 Prompt
             </v-chip>
