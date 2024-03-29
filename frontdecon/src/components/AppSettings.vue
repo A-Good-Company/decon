@@ -140,8 +140,8 @@ export default {
         );
 
         this.selectedLanguage = currentLanguage ? currentLanguage.code : "";
-        this.updateEnableLrcSubs(this.$store.state.enableLrcSubs);
-        this.updateEnableSrtSubs(this.$store.state.enableSrtSubs);
+        this.enableLrcSubs = this.$store.state.enableLrcSubs;
+        this.enableSrtSubs = this.$store.state.enableSrtSubs;
         this.dialog = true;
     },
 }

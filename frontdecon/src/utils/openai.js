@@ -9,7 +9,7 @@ const openAiService = {
         try {
             const response = await axios.post('https://api.openai.com/v1/chat/completions', {
                 model: store.state.model, // Use the updated model from the reference
-                max_tokens: store.state.tokenCount,
+                max_tokens: parseInt(store.state.tokenCount),
                 messages: [{ role: "user", content: prompt }]
                 // You might want to include additional parameters if needed
             }, {

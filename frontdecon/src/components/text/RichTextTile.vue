@@ -247,7 +247,7 @@ export default {
             this.updateTileAppearance();
         },
     },
-    created() {
+    mounted() {
         this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
         this.updateTileAppearance();
     }

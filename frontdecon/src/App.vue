@@ -188,6 +188,10 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.keydownHandler);
   },
+  errorCaptured(err) {
+    alert(`An error has occurred: ${err.message}`)
+    return false; // prevents the error from propagating further
+  },
 }
 </script>
 
