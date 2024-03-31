@@ -193,8 +193,14 @@ export default {
 
 
 <style>
+
+body {
+  background-color: #bed9d8; 
+}
+
 .richTextTile {
   width: 100%;
+  background-color: white;
 }
 
 .mediaTile {
