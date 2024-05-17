@@ -11,7 +11,7 @@
             <v-btn density="default" flat class="mx-1" size="small" color="pink" @click="close">Close</v-btn>
             <!-- <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button> -->
             <v-btn density="default" flat class="mx-1" size="small" color="blue"
-                @click="handleGenerateText">Hallucinate</v-btn>
+                @click="handleGenerateText">AI-Complete</v-btn>
             <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">My Prompts</v-btn>
             <v-chip v-if="isPrompt" size="small" color="green-darken-4">
                 Prompt
@@ -27,7 +27,8 @@
                         <v-row v-for="id in Object.keys($store.state.prompts)" :key="id">
                             <v-col cols="auto">
                                 <div>{{ id }}</div>
-                                <div class="subtitle"  style="font-size: 0.8em;">{{ $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
+                                <div class="subtitle" style="font-size: 0.8em;">{{
+        $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="auto">
@@ -250,7 +251,10 @@ export default {
     mounted() {
         this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
         this.updateTileAppearance();
-    }
+    },
+    errorCaptured() {
+        this.lockContentUpdates = false;
+    },
 };
 </script>
 

@@ -6,24 +6,19 @@ import { format, fromUnixTime } from 'date-fns';
 
 const openAiService = {
     async generateText(prompt) {
-        try {
-            const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-                model: store.state.model, // Use the updated model from the reference
-                max_tokens: parseInt(store.state.tokenCount),
-                messages: [{ role: "user", content: prompt }]
-                // You might want to include additional parameters if needed
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${store.state.openAIKey}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            // Assuming that response data structure is similar to what's shown in the reference
-            return response.data.choices[0].message.content; // Or handle response as needed
-        } catch (error) {
-            console.error('Error generating text: ', error);
-            throw error;
-        }
+        const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+            model: store.state.model, // Use the updated model from the reference
+            max_tokens: parseInt(store.state.tokenCount),
+            messages: [{ role: "user", content: prompt }]
+            // You might want to include additional parameters if needed
+        }, {
+            headers: {
+                'Authorization': `Bearer ${store.state.openAIKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        // Assuming that response data structure is similar to what's shown in the reference
+        return response.data.choices[0].message.content; // Or handle response as needed
     },
 
     async detectText(file) {

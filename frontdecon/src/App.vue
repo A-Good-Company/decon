@@ -3,8 +3,8 @@
   <div class="app">
     <div class="tiles-grid richTextTile">
       <rich-text-tile v-for="tile in tiles" :key="tile.id" :myKey="tile.id" :id="tile.id" :initheader="tile.initheader"
-        :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose" @openSettings="showSettings"
-        @newTile="addLoadedTile" @newHeadedTile="addLoadedTileWithHeader" />
+        :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose"
+        @openSettings="showSettings" @newTile="addLoadedTile" @newHeadedTile="addLoadedTileWithHeader" />
     </div>
     <div class="vid-tiles-grid mediaTile">
       <video-tile v-for="(tile, index) in mediaTiles" :key="tile.id" :myKey="tile.id" :id="index + 1" :mime="tile.mime"
@@ -21,7 +21,7 @@
     <media-recorder @audioFile="loadFile" />
     <!-- <app-settings v-if="showModal" @closeModal="showModal = false" @applySettings="saveSettings" /> -->
     <themed-button type="new" @clickButton="showSettings">Settings</themed-button>
-    <app-settings v-if="showModal" @hideSettings="hideSettings"/>
+    <app-settings v-if="showModal" @hideSettings="hideSettings" />
     <universal-playback v-if="mediaTiles.length >= 1" />
   </div>
 </template>
@@ -188,9 +188,13 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.keydownHandler);
   },
-  errorCaptured(err) {
-    alert(`An error has occurred: ${err.message}`)
-    return false; // prevents the error from propagating further
+  errorCaptured(error) {
+    if (error.response && error.response.data && error.response.data.error) {
+      alert(`An error has occurred: ${error.response.data.error.message}`)
+    } else {
+      alert(`An error has occurred: ${error.message}`)
+    }
+    return false;
   },
 }
 </script>

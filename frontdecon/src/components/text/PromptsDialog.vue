@@ -1,28 +1,44 @@
 <template>
-    <div class="prompts-dialog">
-      <div v-for="(prompt, index) in prompts" :key="index">
-        <h3>{{prompt.id}}</h3> 
-        <p>{{prompt.content}}</p>
-        <v-btn class="mx-1 my-1" flat size="small" @click="editPrompt(prompt.id)">Edait</v-btn>
-        <v-btn class="mx-1 my-1" flat size="small" @click="runPrompt(prompt)">Run</v-btn>
-      </div>
+    <div>
+        <v-dialog v-model="openPromptsDialog" persistent max-width="500px">
+            <v-card>
+                <v-card-title>Prompts</v-card-title>
+                <v-card-text>
+                    <v-row v-for="id in Object.keys($store.state.prompts)" :key="id">
+                        <v-col cols="auto">
+                            <div>{{ id }}</div>
+                            <div class="subtitle"  style="font-size: 0.8em;">{{ $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                        <v-col cols="auto">
+                            <v-btn class="mx-1 my-1" flat size="small" color="primary"
+                                @click="runPrompt(id)">Run</v-btn>
+                            <v-btn class="mx-1 my-1" flat size="small" color="secondary"
+                                @click="editPrompt(id)">Edit</v-btn>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" text @click="openPromptsDialog = false">Close</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    props: ['prompts'],
+</template>
+<script>
+export default {
+    name: 'PromptComponent',
+    props: ['openPromptsDialog'],
     methods: {
-      editPrompt(promptId) {
-        this.$emit('editPrompt', promptId);
-      },
-      runPrompt(prompt) {
-        this.$emit('runPrompt', prompt);
-      },
+        runPrompt(id) {
+            this.$emit('runPrompt', id);
+            this.$emit('toggleDialog', false);
+        },
+        editPrompt(id) {
+            this.$emit('editPrompt', id);
+            this.$emit('toggleDialog', false);
+        },
     },
-  };
-  </script>
-  
-  <style scoped>
-  /* add styles here for prompts dialog */
-  </style>
+}
+</script>
