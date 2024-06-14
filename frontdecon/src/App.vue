@@ -1,6 +1,12 @@
 <template>
 
   <div class="app">
+    <div class="chat-tiles-grid chatTile">
+      <chat-tile v-for="tile in chatTiles" :key="tile.id" :myKey="tile.id" :id="tile.id" 
+        :initheader="tile.initheader" :initcontent="tile.initcontent" 
+        :ref="`chatTile-${tile.id}`" @close="handleChatTileClose" 
+        @openSettings="showSettings" @newChatTile="addNewChatTile"/>
+    </div>
     <div class="tiles-grid richTextTile">
       <rich-text-tile v-for="tile in tiles" :key="tile.id" :myKey="tile.id" :id="tile.id" :initheader="tile.initheader"
         :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose"
@@ -18,9 +24,12 @@
       for="file">Load file</label>
 
     <themed-button type="new" @clickButton="addTile">New Text Tile</themed-button>
+    <themed-button type="new" @clickButton="addNewChatTile">New Chat Tile</themed-button>
+
     <media-recorder @audioFile="loadFile" />
     <!-- <app-settings v-if="showModal" @closeModal="showModal = false" @applySettings="saveSettings" /> -->
     <themed-button type="new" @clickButton="showSettings">Settings</themed-button>
+    <voice-transcriber></voice-transcriber>
     <app-settings v-if="showModal" @hideSettings="hideSettings" />
     <universal-playback v-if="mediaTiles.length >= 1" />
   </div>
@@ -37,6 +46,9 @@ import ThemedButton from './components/items/ThemedButton.vue';
 // import AppSettings from './components/AppSettings.vue';
 import MediaRecorder from './components/MediaRecorder.vue';
 import AppSettings from './components/AppSettings.vue';
+import VoiceTranscriber from './components/VoiceTranscriber.vue';
+import ChatTile from './components/text/ChatTile.vue';
+
 
 export default {
   components: {
@@ -47,11 +59,15 @@ export default {
     'themed-button': ThemedButton,
     // 'app-settings': AppSettings,
     'media-recorder': MediaRecorder,
-    'app-settings': AppSettings
+    'app-settings': AppSettings,
+    'voice-transcriber' : VoiceTranscriber,
+    'chat-tile' : ChatTile
   },
 
   data() {
     return {
+      chatTiles: [],
+      nextChatId: 1,
       tiles: [],
       nextId: 1,
       mediaTiles: [],
@@ -150,6 +166,20 @@ export default {
       } else {
         reader.readAsDataURL(file);
       }
+    },
+
+    addNewChatTile(header, content) {
+      let id = Date.now();
+      console.log(`id: ${id}, header: ${header}, content: ${content}`)
+      this.chatTiles.push({ id: id, initheader: header, initcontent: content });
+      this.$nextTick(() => {
+        this.$refs[`chatTile-${id}`][0].$el.focus();
+        this.$refs[`chatTile-${id}`][0].$el.scrollIntoView({ behavior: "smooth" });
+      });
+    },
+
+    handleChatTileClose(idToRemove) {
+      this.chatTiles = this.chatTiles.filter(tile => tile.id !== idToRemove);
     },
     addMediaTile(mediaType, fileContent, file) {
       this.mediaTiles.push({ id: this.nextVidId++, mime: mediaType, fileContent: fileContent, file: file });

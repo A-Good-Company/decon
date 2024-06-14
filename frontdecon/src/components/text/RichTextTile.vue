@@ -131,11 +131,12 @@ export default {
             this.selectedContent = selectedContent
         },
         async handleGenerateText() {
+            const autoCompletePrompt = "**This is a continuous document, being generated in multiple steps. If a text is incomplete, the next part should start from the next character. Please ensure each continuation logically follows from the last to maintain context and coherence.**\n\n"
             this.lockContentUpdates = true;
 
             // generates text based on selected text or the entire content
             const inputText = this.selectedContent.length > 0 ? this.selectedContent : this.content;
-            const result = await openai.generateText(inputText);
+            const result = await openai.generateText(autoCompletePrompt + inputText);
             this.lockContentUpdates = false;
 
             if (this.selectedContent.length > 0) {
