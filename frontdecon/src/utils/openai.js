@@ -4,21 +4,37 @@ import FormData from 'form-data';
 import { format, fromUnixTime } from 'date-fns';
 
 const openAiService = {
-    async generateText(prompt) {
-        const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-            model: store.state.model, 
-            max_tokens: parseInt(store.state.tokenCount),
-            messages: [{ role: "assistant", content: prompt }]
-        }, {
-            headers: {
-                'Authorization': `Bearer ${store.state.openAIKey}`,
-                'Content-Type': 'application/json'
+    async generateText(prompt, callback) {
+        const { openAIKey: key, model, tokenCount: max_tokens } = store.state;
+        const headers = { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' };
+        const body = JSON.stringify({ model, max_tokens: parseInt(max_tokens), messages: [{ role: "assistant", content: prompt }], stream: true });
+    
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers, body });
+    
+            const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
+            if (!reader) return;
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done || value === 'data: [DONE]') break;
+    
+                value.split('\n')
+                    .filter(data => data.length > 0 && !data.startsWith(':'))
+                    .forEach((data) => {
+                        try {
+                            const chunkContent = JSON.parse(data.substring(6))?.choices?.[0]?.delta?.content;
+                            if (chunkContent && callback) callback(chunkContent);
+                        } catch (error) {
+                            console.error("Error parsing data:", error);
+                        }
+                    });
             }
-        });
-        // Assuming that response data structure is similar to what's shown in the reference
-        return response.data.choices[0].message.content; // Or handle response as needed
+        } catch (error) {
+            console.error("Request failed:", error);
+        }
     },
-    async generateChat(messages) {
+        async generateChat(messages) {
         const formattedMessages = messages.map(message => ({ role: "user", content: message }));
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
             model: store.state.model,
@@ -37,21 +53,21 @@ const openAiService = {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
             model: 'gpt-4o',
             messages: [
-              {
-                role: "user",
-                content: [
-                  {
-                    type: "text",
-                    text: text
-                  },
-                  {
-                    type: "image_url",
-                    image_url: {
-                      url: `${imageBlob}`
-                    }
-                  }
-                ]
-              }
+                {
+                    role: "user",
+                    content: [
+                        {
+                            type: "text",
+                            text: text
+                        },
+                        {
+                            type: "image_url",
+                            image_url: {
+                                url: `${imageBlob}`
+                            }
+                        }
+                    ]
+                }
             ],
             max_tokens: parseInt(store.state.tokenCount),
         }, {
@@ -70,7 +86,7 @@ const openAiService = {
         return headers;
     },
 
-    createForm(data, prompt=''){
+    createForm(data, prompt = '') {
         const formdata = new FormData();
         formdata.append("model", "whisper-1");
         formdata.append("timestamp_granularities[]", "segment");
@@ -82,11 +98,11 @@ const openAiService = {
     },
 
     // Create common post request function
-    async postRequest(url, requestOptions){
+    async postRequest(url, requestOptions) {
         try {
             const response = await fetch(url, requestOptions);
             const result = await response.text();
-            
+
             if (!response.ok) {
                 throw new Error(`${response.status}: ${response.statusText}`);
             }
@@ -98,7 +114,7 @@ const openAiService = {
     },
 
     // Detect text from file
-    detectText(file, prompt='') {
+    detectText(file, prompt = '') {
         const requestOptions = {
             method: "POST",
             headers: this.createHeaders(),
@@ -108,13 +124,13 @@ const openAiService = {
         return this.postRequest("https://api.openai.com/v1/audio/transcriptions", requestOptions)
     },
     // Detect text from audio blob
-    detectTextFromAudioBlob(audioBlob, prompt='') {
+    detectTextFromAudioBlob(audioBlob, prompt = '') {
         const requestOptions = {
             method: "POST",
             headers: this.createHeaders(),
             body: this.createForm(audioBlob, prompt), // pass prompt to createForm
             redirect: "follow",
-        }; 
+        };
         return this.postRequest("https://api.openai.com/v1/audio/transcriptions", requestOptions)
     },
 
@@ -130,7 +146,7 @@ const openAiService = {
             let start_mins = format(fromUnixTime(segment.start), 'mm');
             let start_secs = format(fromUnixTime(segment.start), 'ss.SS');
             const start_lrc = `[${start_mins}:${start_secs}]`
-  
+
             // Construct SRT and LRC text
             srt += `${i + 1}\n${start} --> ${end}\n${segment.text.replace(/[\u{1F600}-\u{1F64F}]/gu, "")}\n\n`;
             lrc += `${start_lrc}${segment.text.replace(/[\u{1F600}-\u{1F64F}]/gu, "")}\n`;

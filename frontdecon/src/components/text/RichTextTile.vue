@@ -10,8 +10,8 @@
             <!-- <my-button type="close" @clickButton="close">Close</my-button> -->
             <v-btn density="default" flat class="mx-1" size="small" color="pink" @click="close">Close</v-btn>
             <!-- <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button> -->
-            <v-btn density="default" flat class="mx-1" size="small" color="blue"
-                @click="handleGenerateText">AI-Complete</v-btn>
+            <v-btn density="default" flat class="mx-1" size="small" color="blue" @click="handleGenerateText">{{
+                selectedContent.length > 0 ? 'Copy To New' : 'AI-Complete' }}</v-btn>
             <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">My Prompts</v-btn>
             <v-chip v-if="isPrompt" size="small" color="green-darken-4">
                 Prompt
@@ -28,7 +28,7 @@
                             <v-col cols="auto">
                                 <div>{{ id }}</div>
                                 <div class="subtitle" style="font-size: 0.8em;">{{
-        $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
+                                    $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="auto">
@@ -131,19 +131,18 @@ export default {
             this.selectedContent = selectedContent
         },
         async handleGenerateText() {
-            const autoCompletePrompt = "**This is a continuous document, being generated in multiple steps. If a text is incomplete, the next part should start from the next character. Please ensure each continuation logically follows from the last to maintain context and coherence.**\n\n"
-            this.lockContentUpdates = true;
+            if (!this.selectedContent.length) {
 
-            // generates text based on selected text or the entire content
-            const inputText = this.selectedContent.length > 0 ? this.selectedContent : this.content;
-            const result = await openai.generateText(autoCompletePrompt + inputText);
-            this.lockContentUpdates = false;
+                const autoCompletePrompt = "**This is a continuous document, being generated in multiple steps. If a text is incomplete, the next part should start from the next character. Please ensure each continuation logically follows from the last to maintain context and coherence.**";
 
-            if (this.selectedContent.length > 0) {
-                this.$emit('newTile', this.selectedContent + '\n' + result);
-            } else {
-                this.content += result;
-            }
+                this.lockContentUpdates = true;
+
+                openai.generateText(autoCompletePrompt + this.content, (chunkContent) => {
+                    this.lockContentUpdates = false
+                    this.content += chunkContent;
+                }).finally(() => this.lockContentUpdates = false);
+
+            } else this.$emit('newTile', this.selectedContent);
         },
         handleMessageClick() {
             this.$emit('openSettings');
