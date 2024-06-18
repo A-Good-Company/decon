@@ -137,10 +137,16 @@ export default {
 
                 this.lockContentUpdates = true;
 
-                openai.generateText(autoCompletePrompt + this.content, (chunkContent) => {
-                    this.lockContentUpdates = false
-                    this.content += chunkContent;
-                }).finally(() => this.lockContentUpdates = false);
+                try {
+                    await openai.generateText(autoCompletePrompt + this.content, (chunkContent) => {
+                        this.lockContentUpdates = false;
+                        this.content += chunkContent;
+                    }).finally(() => this.lockContentUpdates = false);
+                } catch (error) {
+                    console.error('Error during OpenAI text generation:', error);
+                    this.lockContentUpdates = false;
+                    throw error;
+                }
 
             } else this.$emit('newTile', this.selectedContent);
         },
