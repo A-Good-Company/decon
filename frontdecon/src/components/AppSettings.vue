@@ -120,6 +120,12 @@ export default {
             } else {
                 this.updateOpenAIKey(null);
             }
+
+            if (this.replicateKey.trim() !== '') {
+                this.updateReplicateKey(this.replicateKey);
+            } else {
+                this.updateReplicateKey(null);
+            }
             this.updateTokenCount(this.tokenCount);
             this.updateModel(this.model);
 

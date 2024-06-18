@@ -8,33 +8,36 @@ const openAiService = {
         const { openAIKey: key, model, tokenCount: max_tokens } = store.state;
         const headers = { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' };
         const body = JSON.stringify({ model, max_tokens: parseInt(max_tokens), messages: [{ role: "assistant", content: prompt }], stream: true });
-    
-        try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers, body });
-    
-            const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
-            if (!reader) return;
-            // eslint-disable-next-line no-constant-condition
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done || value === 'data: [DONE]') break;
-    
-                value.split('\n')
-                    .filter(data => data.length > 0 && !data.startsWith(':'))
-                    .forEach((data) => {
-                        try {
-                            const chunkContent = JSON.parse(data.substring(6))?.choices?.[0]?.delta?.content;
-                            if (chunkContent && callback) callback(chunkContent);
-                        } catch (error) {
-                            console.error("Error parsing data:", error);
-                        }
-                    });
-            }
-        } catch (error) {
-            console.error("Request failed:", error);
+
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers, body });
+
+        if (!response.ok) {
+            const errorBody = await response.json();
+            const errorMsg = errorBody.error?.message || `Error: ${response.status} ${response.statusText}`;
+            throw new Error(errorMsg);
         }
+        const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
+        if (!reader) return;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done || value === 'data: [DONE]') break;
+
+            value.split('\n')
+                .filter(data => data.length > 0 && !data.startsWith(':'))
+                .forEach((data) => {
+                    try {
+                        const chunkContent = JSON.parse(data.substring(6))?.choices?.[0]?.delta?.content;
+                        if (chunkContent && callback) callback(chunkContent);
+                    } catch (error) {
+                        console.error("Error parsing data:", error);
+                    }
+                });
+        }
+
     },
-        async generateChat(messages) {
+    async generateChat(messages) {
         const formattedMessages = messages.map(message => ({ role: "user", content: message }));
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
             model: store.state.model,
