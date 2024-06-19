@@ -1,15 +1,18 @@
+<template>
+  <div>
+    <InkMde ref="mdeditor" id="mdeditor" v-model="markdown" :options="options" :readonly="options.interface.readonly" />
+  </div>
+</template>
+
 <script>
-import {InkMde} from 'ink-mde/vue'
-import {onMounted, reactive, ref, watch } from 'vue'
+import { InkMde } from 'ink-mde/vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 
 export default {
-  components: {InkMde},
+  components: { InkMde },
   props: ['tileContent', 'readonly'],
-  setup(props, {emit}) {
-    // const selectedText = ref(null);
-    // const startSelectionPosition = ref(null);
-    // const endSelectionPosition = ref(null);
-    
+  setup(props, { emit }) {
+    const mdeditor = ref(null);
     const markdown = ref(props.tileContent)
 
     const options = reactive({
@@ -21,17 +24,16 @@ export default {
     });
 
     onMounted(() => {
-      //todo: Make the emit specific to parent, right now its being acknowledged by all the listeners in tiles
       document.addEventListener('selectionchange', () => {
         var selectionRange = window.getSelection()
         console.log("Selection range: " + JSON.stringify(selectionRange))
         var selectionText = selectionRange.toString()
-        emit('textSelected', 
+        emit('textSelected',
           selectionText
         );
       });
     });
-    
+
     watch(() => props.tileContent, (newVal) => {
       console.log("tilecontent changed")
       if (newVal !== markdown.value) {
@@ -41,43 +43,39 @@ export default {
 
     watch(markdown, (content) => {
       emit('updateContent', content)
+
+      //  Scroll to end when markdown content changes
+      if (mdeditor.value) {
+        mdeditor.value.$el.scrollTop = mdeditor.value.$el.scrollHeight;
+      }
     });
 
     watch(() => props.readonly, (newVal) => {
       options.interface.readonly = newVal
     })
-    
+
     return {
-      markdown, 
+      markdown,
       options,
+      mdeditor
     }
   },
 }
-
 </script>
 
-<template>
-  <div>
-    <InkMde id="mdeditor" v-model="markdown" :options="options" :readonly="options.interface.readonly"/>
-  </div>
-</template>
-
 <style scoped>
-/* Apply
-
-  the custom CSS property to the InkMde component */
 #mdeditor {
-  /* --ink-block-background-color: lightgrey; */
   --ink-editor-line-height: 20px;
   --ink-block-padding: 0rem;
-  --ink-block-max-height: 30em; 
+  --ink-block-max-height: 30em;
   max-height: 70vh;
-  overflow-y:auto;
+  overflow-y: auto;
 }
 
 #mdeditor > * {
   overflow-y: hidden;
 }
+
 #mdeditor[readonly] {
   filter: blur(1px);
   pointer-events: none;
