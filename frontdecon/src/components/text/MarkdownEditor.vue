@@ -24,14 +24,17 @@ export default {
     });
 
     onMounted(() => {
-      document.addEventListener('selectionchange', () => {
-        var selectionRange = window.getSelection()
-        console.log("Selection range: " + JSON.stringify(selectionRange))
-        var selectionText = selectionRange.toString()
-        emit('textSelected',
-          selectionText
-        );
-      });
+      function updateSelectedText() {
+        var selectionRange = window.getSelection();
+        var selectionText = selectionRange.toString();
+        emit('textSelected', selectionText);
+      }
+
+      // Updated the selected text when the selection changes
+      document.addEventListener('selectionchange', updateSelectedText);
+
+      // Also update the selected text when a key is released
+      document.addEventListener('keyup', updateSelectedText);
     });
 
     watch(() => props.tileContent, (newVal) => {
@@ -72,7 +75,7 @@ export default {
   overflow-y: auto;
 }
 
-#mdeditor > * {
+#mdeditor>* {
   overflow-y: hidden;
 }
 
