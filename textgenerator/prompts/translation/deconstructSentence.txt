@@ -1,0 +1,82 @@
+---
+PromptInfo:
+ promptId: deconstructSentence
+ name: ✏️ Deconstruct Sentence
+ description: selected sentence will be deconstructed
+ author: Munk
+ tags: writing
+ version: 0.0.1
+---
+
+Prompt:
+Explain the sentence in fine details, with letters used if letters are non-english. Explain one word/phrase at a time. 
+
+SampleInput:
+तेरी मेरी प्रेम कहानी, है सबसे प्यारी
+
+Explanation:
+तेरी/Teri - Yours (तेरी/Teri : yours) ; Letters used - त : Ta, र : Ra, ी : 'ee' matra
+मेरी/Meri - Mine (मेरी/Meri : mine) ; Letters used - म : Ma, र : Ra, ी : 'ee' matra
+प्रेम/Prem - Love (प्रेम/Prem: love); Letters used - प : Pa, र : Ra, े: 'e' matra, म: Ma
+कहानी/Kahani - Story (कहानी/Kahani: story); Letters used - क: Ka, हा: Ha with 'aa' matra, न: Na, ी: 'ee' matra
+है/Hai - Is (है/Hai: is); Letters used - ह: Ha, ै: 'ai' matra
+सबसे/Sabse - The most/the best; Letters used - स: Sa, ब: Ba, से: Se
+प्यारी/Pyari - Lovely/dear; Letters used - प्या: Pa combined with ya with 'aa' matra, री: Ra with 'ee' matra
+
+Full Translation:
+Yours and mine love story is the dearest of all.
+
+Probable Meaning:
+The speaker is expressing that the love story between them and their partner is the most precious compared to others.
+
+SampleInput:
+رجعوني عنيه لأيام اللي راحوا علمونا اندم على الماضي وجراحوا
+
+Explanation:
+رجعوني/Rajeouni - Return me (رجع/rajea : return, و/ou : me) ; Letters used - ر : Ra, ج : Jim, ع : Ain, و : Waw, ن : Nun, ي : Ya
+عنيه/aineih - His eyes (عن/aen : about, يه/ih : him) ; Letters used - ع : Ain, ن : Nun, ي : Ya, ه : Ha
+لأيام/le ayam - To days (ل/le : to, أيام/ayam : days) ; Letters used - ل : Lam, أ : Alif, ي : Ya, ا : Ain, م : Mim
+اللي/elly - Which ; Letters used - ال : Alif Lam (the), ل : Lam, ي : Ya
+راحوا/rahoua - They went (راح/rhah : went, وا/wa : they) ; Letters used - ر : Ra, ا : Alif, ح : Ha, و : Waw, ا : Alif
+علمونا/alamouna - They taught us (علم/alim : taught, ونا/wana : us) ; Letters used - ع : Ain, ل : Lam, م : Mim, و : Waw, ن : Nun, ا : Alif
+اندم /andam - Regret ; Letters used - ا : Alif, ن : Nun, د : Dal. م : Mim
+على /ala - On ; Letters used - ع : Ain, ل : Lam, ى : Ya
+الماضي/al madi - The Past (ال/al : the, ماضي/madi : past) ; Letters used - ال : Alif Lam (definite article), م : Mim, ا : Alif, ض : Dad, ي : Ya
+وجراحوا/wejrahoua - And their wounds (و/we : and, جراح/jirah : wounds, وا/wa : their) ; Letters used - و : Waw (and), ج : Jeem, ر : Ra, ا : Alif, ح : Ha, و : Waw, ا : Alif
+
+Full Translation:
+His eyes return me to the days that have passed, they taught us to regret the past and its wounds.
+
+Probable Meaning:
+The author is expressing a desire to return to their past, acknowledging that those experiences taught them to feel regret for the wounds and pain they endured.
+
+
+SampleInput:
+اللي شفته قبل ما تشوفك عينيا عمري ضايع يحسبوه ازاي عليا
+
+Explanation:
+اللي/elly - The one who (اللي/elly : the one who) ; Letters used - ال : Alif Lam (the), ل : Lam, ي : Ya
+شفته/shafth - I saw him (شفت/shaft : saw, ه/him : him) ; Letters used - ش : Sheen, ف : Fa, ت : Ta, ه : Ha
+قبل/qabl - Before ; Letters used - ق : Qaf, ب : Ba, ل : Lam
+ما/ma - Not ; Letters used - م : Mim, ا : Alif
+تشوفك/tshoufak - You see (تشوف/tshouf : see, ك/k : you) ; Letters used - ت : Ta, ش : Sheen, و : Waw, ف : Fa, ك : Kaf
+عينيا/ainia - My eyes (عين/ain : eye, يا/yaa : my) ; Letters used - ع : Ain, ي : Ya, ن : Nun, ي : Ya
+عمري/'omri - My life (عمر/'omr : life, ي/yi : my) ; Letters used - ع : Ain, م : Mim, ر Ra, ي Ya
+ضايع/daia' - Lost ; Letters used - ض : Daad, ا : Alif, ي : Ya', ع : Ain
+يحسبوه/yehsabuhu – They count it (يحسب/yehsab : count, ه/him : it ) ; Letters used - ي : Ya', و : Waw, ه : Ha
+ازاي/ezay – How ; Letters used - ا : Alif, ز : Zayn, ا : Alif, ي : Ya'
+عليا/alaya – On me ; Letters used - ع : Ain, ل : Lam, ي : ya'
+
+Full Translation:
+The one I saw before my eyes saw you, how can they count my lost life against me?
+
+Probable Meaning:
+The author is reflecting on their life before they met their love, questioning why they should be held accountable for the time they feel was wasted before they found their love.
+
+---
+
+
+Actual Input:
+{{context}}
+
+Explanation:

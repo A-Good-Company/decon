@@ -1,0 +1,51 @@
+---
+PromptInfo : 
+ promptId : prettyDeconstructSentence
+ name : ✏️ Pretty Deconstruct Sentence
+ description : select content and it will be explained
+ author : Munk
+ tags : writing
+ version : 0.0.1
+---
+
+
+Input : 
+رجعوني عنيه لأيام اللي راحوا علمونا اندم على الماضي وجراحوا
+Prompt : 
+Explain the sentence in fine details, with letters used if letters are non-english. Explain one word/phrase at a time. 
+Explanation : 
+<u>رجعوني/Rajeouni</u> - Return me (رجع/rajea : return, و/ou : me) ; <i>Letters used - ر : Ra, ج : Jim, ع : Ain, و : Waw, ن : Nun, ي : Ya</i>
+<u>عنيه/aineih</u> - His eyes (عن/aen : about, يه/ih : him) ; <i>Letters used - ع : Ain, ن : Nun, ي : Ya, ه : Ha</i>
+<u>لأيام/le ayam</u> - To days (ل/le : to, أيام/ayam : days) ; <i>Letters used - ل : Lam, أ : Alif, ي : Ya, ا : Ain, م : Mim</i>
+<u>اللي/elly</u> - Which ; <i>Letters used - ال : Alif Lam (the), ل : Lam, ي : Ya</i>
+<u>راحوا/rahoua</u> - They went (راح/rhah : went, وا/wa : they) ; <i>Letters used - ر : Ra, ا : Alif, ح : Ha, و : Waw, ا : Alif</i>
+<u>علمونا/alamouna</u> - They taught us (علم/alim : taught, ونا/wana : us) ; <i>Letters used - ع : Ain, ل : Lam, م : Mim, و : Waw, ن : Nun, ا : Alif</i>
+<u>اندم /andam</u> - Regret ; <i>Letters used - ا : Alif, ن : Nun, د : Dal. م : Mim</i>
+<u>على /ala</u> - On ; <i>Letters used - ع : Ain, ل : Lam, ى : Ya</i>
+<u>الماضي/al madi</u> - The Past (ال/al : the, ماضي/madi : past) ; <i>Letters used - ال : Alif Lam (definite article), م : Mim, ا : Alif, ض : Dad, ي : Ya</i>
+<u>وجراحوا/wejrahoua</u> - And their wounds (و/we : and, جراح/jirah : wounds, وا/wa : their) ; <i>Letters used - و : Waw (and), ج : Jeem, ر : Ra, ا : Alif, ح : Ha, و : Waw, ا : Alif</i>
+
+
+Input : 
+اللي شفته قبل ما تشوفك عينيا عمري ضايع يحسبوه ازاي عليا
+Prompt : 
+Explain the sentence in fine details, with letters used if letters are non-english. Explain one word/phrase at a time. 
+Explanation : 
+<u>اللي/elly</u> - The one who (اللي/elly : the one who) ; <i>Letters used - ال : Alif Lam (the), ل : Lam, ي : Ya</i>
+<u>شفته/shafth</u> - I saw him (شفت/shaft : saw, ه/him : him) ; <i>Letters used - ش : Sheen, ف : Fa, ت : Ta, ه : Ha</i>
+<u>قبل/qabl</u> - Before ; <i>Letters used - ق : Qaf, ب : Ba, ل : Lam</i>
+<u>ما/ma</u> - Not ; <i>Letters used - م : Mim, ا : Alif</i>
+<u>تشوفك/tshoufak</u> - You see (تشوف/tshouf : see, ك/k : you) ; <i>Letters used - ت : Ta, ش : Sheen, و : Waw, ف : Fa, ك : Kaf</i>
+<u>عينيا/ainia</u> - My eyes (عين/ain : eye, يا/yaa : my) ; <i>Letters used - ع : Ain, ي : Ya, ن : Nun, ي : Ya</i>
+<u>عمري/'omri</u> - My life (عمر/'omr : life, ي/yi : my) ; <i>Letters used - ع : Ain, م : Mim, ر Ra, ي Ya</i>
+<u>ضايع/daia'</u> - Lost ; <i>Letters used - ض : Daad, ا : Alif, ي : Ya', ع : Ain</i>
+<u>يحسبوه/yehsabuhu</u> – They count it (يحسب/yehsab : count, ه/him : it ) ; <i>Letters used - ي : Ya', و : Waw, ه : Ha</i>
+<u>ازاي/ezay</u> – How ; <i>Letters used - ا : Alif, ز : Zayn, ا : Alif, ي : Ya'</i>
+<u>عليا/alaya</u> – On me ; <i>Letters used - ع : Ain, ل : Lam, ي : ya'</i>
+
+
+Input : 
+{{context}}
+Prompt : 
+Explain the sentence in fine details, with letters used if letters are non-english. Explain one word/phrase at a time. 
+Explanation : 
