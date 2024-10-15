@@ -14,7 +14,8 @@
                         <v-text-field type="number" step="50" label="Token Count*" v-model="tokenCount"
                             required></v-text-field>
 
-                        <v-select :items="['gpt-4o', 'gpt-4', 'gpt-3.5-turbo-16k-0613']" label="Model for Text-AI*"
+                        <v-select :items="['gpt-4o', 'gpt-4', 'gpt-3.5-turbo-16k-0613', 
+                        'claude-3-opus-20240229', 'claude-3-5-sonnet-20240620', 'claude-3-haiku-20240307']" label="Model for Text-AI*"
                             v-model="model" required></v-select>
                         <v-divider class="border-opacity-75" color="info"></v-divider>
 

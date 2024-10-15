@@ -69,6 +69,7 @@
 import MarkdownEditor from './MarkdownEditor.vue';
 // import TextProcessOptions from './TextProcessOptions.vue';
 import openai from '@/utils/openai'
+import ai from '@/utils/ai'
 import { format } from 'date-fns'
 // import {ref} from 'vue'
 
@@ -131,19 +132,20 @@ export default {
             this.selectedContent = selectedContent
         },
         async handleGenerateText() {
+            // await openai.generateAnthropicText(this.content);
             if (!this.selectedContent.length) {
 
-                const autoCompletePrompt = "**This is a continuous document, being generated in multiple steps. If a text is incomplete, the next part should start from the next character. Please ensure each continuation logically follows from the last to maintain context and coherence.**";
+                const autoCompletePrompt = "";
 
                 this.lockContentUpdates = true;
 
                 try {
-                    await openai.generateText(autoCompletePrompt + this.content, (chunkContent) => {
+                    await ai.generateText(autoCompletePrompt + this.content, (chunkContent) => {
                         this.lockContentUpdates = false;
                         this.content += chunkContent;
                     }).finally(() => this.lockContentUpdates = false);
                 } catch (error) {
-                    console.error('Error during OpenAI text generation:', error);
+                    console.error('Error during text generation:', error);
                     this.lockContentUpdates = false;
                     throw error;
                 }

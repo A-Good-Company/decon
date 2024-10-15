@@ -26,6 +26,7 @@ export default createStore({
   state: {
     openAIKey: store.get('openAIKey') || process.env.VUE_APP_OPENAI_DEFAULT_KEY,
     replicateKey: store.get('replicateKey') || process.env.VUE_APP_REPLICATE_DEFAULT_KEY,
+    anthropicKey: process.env.VUE_APP_ANTHROPIC_DEFAULT_KEY,
     isOpenAICharity: store.get('isOpenAICharity') || true,
     isReplicateCharity: store.get('isReplicateCharity') || true,
     tokenCount: store.get('tokenCount') || 4000,
@@ -65,6 +66,21 @@ export default createStore({
         state.isReplicateCharity = true
         state.replicateKey = process.env.VUE_APP_REPLICATE_DEFAULT_KEY
         store.set('replicateKey', process.env.VUE_APP_REPLICATE_DEFAULT_KEY)
+
+      }
+    },
+    updateAnthropicKey(state, key) {
+      if (key && key.trim() !== '') {
+
+        store.set('isAnthropicCharity', false)
+        state.isAnthropicCharity = false
+        state.anthropicKey = key
+        store.set('anthropicKey', key)
+      } else {
+        store.set('isAnthropicCharity', true)
+        state.isAnthropicCharity = true
+        state.anthropicKey = process.env.VUE_APP_ANTHROPIC_DEFAULT_KEY
+        store.set('anthropicKey', process.env.VUE_APP_ANTHROPIC_DEFAULT_KEY)
 
       }
     },

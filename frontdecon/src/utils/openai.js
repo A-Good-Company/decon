@@ -158,6 +158,7 @@ const openAiService = {
         // Return SRT and LRC
         return { srt, lrc, text: substext };
     },
+      
 };
 
 export default openAiService;
