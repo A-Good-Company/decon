@@ -8,6 +8,7 @@
     --white: #FFF;
     --gray : #d1d1d1;
     --dark : #1c1c1c;
+    --semi-dark: #212121
 }
 
 .dark-mode {
@@ -52,9 +53,8 @@
     color: #fff;
 }
 
-.cm-codeblock {
-    background-color: var(--dark) !important;
-
+.dark-mode .cm-codeblock {
+    background-color: var(--semi-dark) !important;
 }
 
 .dark-mode .purple-dark-btn {
