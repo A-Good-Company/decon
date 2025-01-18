@@ -7,7 +7,7 @@
         :ref="`chatTile-${tile.id}`" @close="handleChatTileClose" 
         @openSettings="showSettings" @newChatTile="addNewChatTile"/>
     </div>
-    <div class="tiles-grid richTextTile">
+    <div class="tiles-grid richTextTile dark-outline-card">
       <rich-text-tile v-for="tile in tiles" :key="tile.id" :myKey="tile.id" :id="tile.id" :initheader="tile.initheader"
         :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose"
         @openSettings="showSettings" @newTile="addLoadedTile" @newHeadedTile="addLoadedTileWithHeader" />

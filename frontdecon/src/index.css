@@ -1,3 +1,110 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* DARK MODE */
+
+:root {
+    --white: #FFF;
+    --gray : #d1d1d1;
+    --dark : #1c1c1c;
+}
+
+.dark-mode {
+    min-height: 100vh;
+    background-color: var(--dark);
+    /* border: 2px solid red; */
+}
+
+.dark-mode .v-card-title {
+    color: var(--white);
+}
+
+.dark-mode .promt-words {
+    background-color: var(--gray);
+}
+
+.dark-mode .outline-white-btn {
+    color: var(--white);
+    border: 1px solid var(--white);
+}
+
+.dark-mode .dark-outline-card > .v-card{
+    border: 1px solid var(--gray);
+}
+
+.dark-promt-dialog .dark-promt-card {
+    color: var(--white);
+   background-color: var(--dark);
+}
+
+.dark-mode .ink-mde-editor {
+    color: var(--white);
+    background-color: var(--dark);
+}
+
+.cm-editor{
+    background-color: var(--dark) !important;
+}
+
+.cm-scroller {
+    padding: 20px;
+    color: #fff;
+}
+
+.cm-codeblock {
+    background-color: var(--dark) !important;
+
+}
+
+.dark-mode .purple-dark-btn {
+   
+    background-color: rgba(200, 67, 223, 0.5) !important;
+}
+
+.dark-mode .purple-dark-btn label {
+    color: var(--white) !important;
+}
+
+.dark-mode .setting-dark-modal{
+
+    background-color: var(--dark) !important;
+}
+
+.dark-mode .setting-dark-modal label, 
+.dark-mode .setting-dark-modal input,
+.dark-mode .setting-dark-modal select,
+.dark-mode .setting-dark-modal .dark-select-box span,
+.dark-mode .setting-dark-modal small {
+    color: var(--white) !important;
+}
+
+.dark-mode .setting-dark-modal .dark-close-btn {
+    color: red;
+    border: 1px solid red;
+}
+
+.dark-mode .lang-btn {
+    color: var(--white) !important;
+    border: 1px solid var(--white) !important;
+}
+
+.dark-mode .vide-dark-card {
+    border: 1px solid var(--white) !important;
+}
+
+.dark-mode .media-loader-audio {
+    border: 2px solid red;
+    background-color: var(--black) !important;
+}
+
+.dark-mode .media-loader-audio source{
+    border: 2px solid green;
+    background-color: var(--black) !important;
+}
+
+.dark-mode .cm-editor .cm-content {
+    caret-color: #00ffff; /* Bright cyan color */
+    caret-shape: block; /* Makes the caret a block instead of a line */
+    caret-width: 2px; 
+  }

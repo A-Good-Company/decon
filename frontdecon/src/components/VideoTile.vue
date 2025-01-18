@@ -1,5 +1,5 @@
 <template>
-    <v-card class="video-tile mx-1 my-1" variant="outlined">
+    <v-card class="video-tile vide-dark-card mx-1 my-1" variant="outlined">
         <v-card-title class="headline">
 
             <h4><input type="text" v-model="header" class="tile-header" /></h4>
@@ -16,7 +16,7 @@
             <v-btn density="default" flat class="mx-1" size="small" color="blue" @click="handleDetectText">
                 {{ isGuessing ? 'Guessing...' : 'Guess Words' }}
             </v-btn>
-            <v-btn variant="outlined" size="small" class="mx-1 my-1" @click="handleSettingsClick">
+            <v-btn variant="outlined" size="small" class="mx-1 my-1 lang-btn" @click="handleSettingsClick">
                 {{ $store.state.whisperLanguage }}
             </v-btn>
             <v-btn class="mx-1" flat size="small" color="green" @click="handleIsolateStem">

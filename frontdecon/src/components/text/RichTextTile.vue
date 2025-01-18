@@ -16,19 +16,19 @@
             <v-chip v-if="isPrompt" size="small" color="green-darken-4">
                 Prompt
             </v-chip>
-            <v-chip size="small" class="mx-1">
+            <v-chip size="small" class="mx-1 promt-words">
                 {{ wordCount }} Words
             </v-chip>
             <!-- <my-button type="open-dialog" @clickButton="openPromptsDialog = true">Open Dialog</my-button> -->
-            <v-dialog v-model="openPromptsDialog" persistent max-width="500px">
-                <v-card>
+            <v-dialog v-model="openPromptsDialog" persistent max-width="500px" class="dark-promt-dialog">
+                <v-card class='dark-promt-card' >
                     <v-card-title>Prompts</v-card-title>
                     <v-card-text>
                         <v-row v-for="id in Object.keys($store.state.prompts)" :key="id">
                             <v-col cols="auto">
                                 <div>{{ id }}</div>
                                 <div class="subtitle" style="font-size: 0.8em;">{{
-                                    $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
+        $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="auto">
@@ -45,13 +45,13 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-            <v-btn variant="outlined" size="small" class="mx-1 my-1" @click="handleMessageClick">
+            <v-btn variant="outlined" size="small" class="mx-1 my-1 outline-white-btn" @click="handleMessageClick">
                 {{ $store.state.model }}, {{ $store.state.tokenCount }} tokens
             </v-btn>
             <!-- <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
         <label :for="'pin-checkbox-' + id">Pin</label>
         <label v-if="isPrompt"> Prompt</label> -->
-            <v-chip size="small" color="purple">
+            <v-chip size="small" color="purple" class="purple-dark-btn">
                 <input type="checkbox" :id="'pin-checkbox-' + id" :value="isPinned ? 'Pinned' : 'Pin'"
                     v-model="isPinned" class="mr-2">
                 <label :for="'pin-checkbox-' + id">{{ isPinned ? 'Pinned' : 'Pin' }}</label>

@@ -1,7 +1,7 @@
 <template>
     <div class="pa-4 text-center">
         <v-dialog v-model="dialog" max-width="600">
-            <v-card prepend-icon="mdi-account" title="Settings">
+            <v-card prepend-icon="mdi-account" title="Settings" class="setting-dark-modal">
                 <v-card-text>
                     <v-form>
                         <v-text-field label="Open AI Key*" v-model="openAIKey" required></v-text-field>
@@ -14,8 +14,8 @@
                         <v-text-field type="number" step="50" label="Token Count*" v-model="tokenCount"
                             required></v-text-field>
 
-                        <v-select :items="['gpt-4o', 'gpt-4', 'gpt-3.5-turbo-16k-0613', 
-                        'claude-3-opus-20240229', 'claude-3-5-sonnet-20240620', 'claude-3-haiku-20240307']" label="Model for Text-AI*"
+                        <v-select :items="['gpt-4o', 'gpt-4', 'gpt-3.5-turbo-16k-0613','gpt-4o-mini', 
+                        'claude-3-5-sonnet-latest', 'claude-3-5-haiku-latest']" label="Model for Text-AI*"
                             v-model="model" required></v-select>
                         <v-divider class="border-opacity-75" color="info"></v-divider>
 
@@ -29,7 +29,7 @@
                         <v-divider class="border-opacity-75" color="info"></v-divider>
 
                         <v-autocomplete v-model="selectedLanguage" :items="languages" item-title="name"
-                            item-value="code" label="Select Audio Detection Language"></v-autocomplete>
+                            item-value="code" label="Select Audio Detection Language" class="dark-select-box"></v-autocomplete>
                         <div class="w-full px-3 mb-6 md:mb-0 flex items-center">
                             <input id="enableLrcSubs" type="checkbox" v-model="enableLrcSubs" class="mr-2">
                             <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -55,7 +55,7 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
 
-                    <v-btn text="Close" variant="plain" @click="dialog = false"></v-btn>
+                    <v-btn text="Close" variant="plain" class="dark-close-btn" @click="dialog = false"></v-btn>
 
                     <v-btn color="primary" text="Save" variant="tonal" @click="apply"></v-btn>
                 </v-card-actions>
@@ -121,7 +121,7 @@ export default {
             } else {
                 this.updateOpenAIKey(null);
             }
-
+            
             if (this.replicateKey.trim() !== '') {
                 this.updateReplicateKey(this.replicateKey);
             } else {
