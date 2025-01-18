@@ -57,6 +57,19 @@
     background-color: var(--semi-dark) !important;
 }
 
+.dark-mode .cm-code {
+    background-color: #333338;
+    font-family: var(--ink-internal-code-font-family);
+    padding: var(--ink-internal-inline-padding) 0;
+}
+
+.dark-mode .ink-mde .cm-line .cm-code {
+    background-color: #333338;
+    font-family: var(--ink-internal-code-font-family);
+    padding: var(--ink-internal-inline-padding) 0;
+    color: #e0e0e0; /* Optional: adds light colored text for better contrast */
+}
+
 .dark-mode .purple-dark-btn {
    
     background-color: rgba(200, 67, 223, 0.5) !important;
