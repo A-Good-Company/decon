@@ -2,14 +2,14 @@
     <v-btn
         size="small"
         variant="outlined"
-        :color="isVADStarted ? 'success' : 'default'"
+        :color="getButtonColor"
         @click="toggleVADdetection"
         class="action-button"
     >
         <v-icon size="small" class="mr-1">
-            {{ isVADStarted ? 'mdi-microphone' : 'mdi-microphone-outline' }}
+            {{ getButtonIcon }}
         </v-icon>
-        {{ isVADStarted ? 'Stop' : 'Speech' }}
+        {{ getButtonText }}
     </v-btn>
 </template>
 
@@ -24,6 +24,24 @@ export default {
             myvad: null,
             last240chars: 'This is a conversation. Always leave a space after sentence ends like .,?',
             isVADStarted: false,
+            isRecording: false
+        }
+    },
+    computed: {
+        getButtonColor() {
+            if (this.isRecording) return 'error'
+            if (this.isVADStarted) return 'success'
+            return 'default'
+        },
+        getButtonIcon() {
+            if (this.isRecording) return 'mdi-record'
+            if (this.isVADStarted) return 'mdi-microphone'
+            return 'mdi-microphone-outline'
+        },
+        getButtonText() {
+            if (this.isRecording) return 'Recording...'
+            if (this.isVADStarted) return 'Listening'
+            return 'Speech'
         }
     },
     methods: {
@@ -31,9 +49,14 @@ export default {
             if (this.isVADStarted) {
                 this.myvad.pause();
                 this.isVADStarted = false;
+                this.isRecording = false;
             } else {
-                this.myvad = this.myvad ||await MicVAD.new({
+                this.myvad = this.myvad || await MicVAD.new({
+                    onSpeechStart: () => {
+                        this.isRecording = true;
+                    },
                     onSpeechEnd: async (audio) => {
+                        this.isRecording = false;
                         if (document.visibilityState === "visible") {
                             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                             const rate = 16000;
@@ -74,7 +97,6 @@ export default {
 }
 </script>
 
-
 <style scoped>
 .action-button {
     margin: 4px;
@@ -90,5 +112,24 @@ export default {
 .v-btn--variant-outlined.success {
     color: rgb(var(--v-theme-success));
     border-color: rgb(var(--v-theme-success)) !important;
+}
+
+/* For when actually recording */
+.v-btn--variant-outlined.error {
+    color: rgb(var(--v-theme-error));
+    border-color: rgb(var(--v-theme-error)) !important;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 </style>

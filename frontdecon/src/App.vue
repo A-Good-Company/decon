@@ -99,7 +99,6 @@
 
 
       <media-loader />
-      <media-recorder @audioFile="loadFile" />
       <app-settings v-if="showModal" @hideSettings="hideSettings" />
       <universal-playback v-if="mediaTiles.length >= 1" />
     </div>
@@ -114,7 +113,6 @@ import VideoTile from './components/VideoTile.vue';
 // import AudioPlayer from './components/AudioPlayer.vue';
 import UniversalPlayback from './components/UniversalPlayback.vue';
 // import AppSettings from './components/AppSettings.vue';
-import MediaRecorder from './components/MediaRecorder.vue';
 import AppSettings from './components/AppSettings.vue';
 import ChatTile from './components/text/ChatTile.vue';
 import NewTabDialog from './components/NewTabDialog.vue'
@@ -128,7 +126,6 @@ export default {
     // 'audio-player': AudioPlayer,
     'universal-playback': UniversalPlayback,
     // 'app-settings': AppSettings,
-    'media-recorder': MediaRecorder,
     'app-settings': AppSettings,
     'chat-tile' : ChatTile,
     'new-tab-dialog': NewTabDialog,
@@ -303,12 +300,13 @@ export default {
 
 
 <style>
+
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden; /* Prevent scrolling on the main container */
 }
-
 .v-window {
   flex: 1;
   overflow-y: auto;
@@ -443,5 +441,4 @@ export default {
 .dark-mode .header-buttons .v-icon {
   color: var(--white) !important;
 }
-
 </style>

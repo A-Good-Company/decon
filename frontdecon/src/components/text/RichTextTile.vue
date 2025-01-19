@@ -14,6 +14,8 @@
                 selectedContent.length > 0 ? 'Copy To New' : 'AI-Complete' }}</v-btn>
             <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">My Prompts</v-btn>
             <voice-transcriber @transcriptionComplete="handleTranscription"/>
+            <audio-recorder @transcription="handleTranscription" />
+
             <v-chip v-if="isPrompt" size="small" color="green-darken-4">
                 Prompt
             </v-chip>
@@ -71,6 +73,8 @@ import MarkdownEditor from './MarkdownEditor.vue';
 // import TextProcessOptions from './TextProcessOptions.vue';
 import openai from '@/utils/openai'
 import VoiceTranscriber from '../VoiceTranscriber.vue'
+import AudioRecorder from '../AudioRecorder.vue'
+
 
 import ai from '@/utils/ai'
 import { format } from 'date-fns'
@@ -81,6 +85,7 @@ export default {
         // 'rich-text-editor' : RichTextEditor,
         'markdown-editor': MarkdownEditor,
         VoiceTranscriber,   
+        AudioRecorder
         // 'text-process-options': TextProcessOptions,
     },
 
@@ -223,6 +228,7 @@ export default {
                 this.tileColor = 'default';
             }
         },
+        
     },
     watch: {
         header(newHeader, oldHeader) {
