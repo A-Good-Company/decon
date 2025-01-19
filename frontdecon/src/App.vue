@@ -29,6 +29,18 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </div>
+
+      <div class="settings-button">
+        <v-btn
+          variant="text"
+          icon
+          size="small"
+          @click="showSettings"
+          class="ml-2"
+        >
+          <v-icon>mdi-cog</v-icon>
+        </v-btn>
+      </div>
     </v-tabs>
 
 
@@ -85,7 +97,6 @@
       <div class="action-buttons">
         <themed-button type="new" @clickButton="addTile">New Text Editor</themed-button>
         <themed-button type="new" @clickButton="addNewChatTile">New Chat</themed-button>
-        <themed-button type="new" @clickButton="showSettings">Settings</themed-button>
       </div>
 
       <media-loader />
@@ -372,6 +383,25 @@ export default {
 }
 
 .dark-mode .new-tab-button .v-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.settings-button {
+  display: flex;
+  align-items: center;
+  padding-right: 16px;
+}
+
+.settings-button .v-btn {
+  border-radius: 4px;
+}
+
+/* Dark mode styles for the settings button */
+.dark-mode .settings-button .v-btn {
+  color: var(--white);
+}
+
+.dark-mode .settings-button .v-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 </style>
