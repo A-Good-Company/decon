@@ -63,6 +63,7 @@
           @openSettings="showSettings"
           @newTile="addLoadedTile"
           @newHeadedTile="addLoadedTileWithHeader"
+          @updateHeader="updateTileHeader"
         />
       </v-window-item>
 
@@ -273,6 +274,13 @@ export default {
     showNewTabDialog() {
       this.$refs.newTabDialog.showDialog()
     },
+    updateTileHeader(id, newHeader) {
+      const tile = this.tiles.find(t => t.id === id);
+      if (tile) {
+        tile.initheader = newHeader;
+        this.id = newHeader;
+      }
+    },
   },
   mounted() {
     window.addEventListener('keydown', this.onKeydown);
@@ -400,9 +408,6 @@ export default {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.v-tabs {
-  padding-right: 48px; /* Make space for settings button */
-}
 
 
 .header-container {
@@ -443,6 +448,7 @@ export default {
 .tab-item {
   position: relative;
   padding-right: 18px !important;
+  padding-left: 6px !important;
 }
 
 .tab-label {

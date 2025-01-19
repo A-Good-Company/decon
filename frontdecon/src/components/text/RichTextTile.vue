@@ -1,8 +1,5 @@
 <template>
     <v-card class="rich-text-tile mx-1 my-1" :variant="tileVariant" :color="tileColor">
-        <v-card-title class="headline">
-            <h4><input type="text" v-model="header" class="tile-header" @focus="selectAll" /></h4>
-        </v-card-title>
         <v-card-text>
             <markdown-editor class="markdownEditor" :tileContent="content"
                 @updateContent="handleUpdateContentFromEditor" @textSelected="handleTextSelected"
@@ -135,6 +132,20 @@ export default {
                 if (this.isPrompt) {
                     this.$store.commit('updatePrompt', { id: this.header, content: this.content });
                 }
+                //Updating header
+                let firstLine = this.content.split('\n')[0].trim();
+                // If first line is empty, use default text
+                if (!firstLine) {
+                    firstLine = 'Text Editor';
+                }
+                // Limit the length of the header if needed
+                if (firstLine.length > 13) {
+                    firstLine = firstLine.substring(0, 13) + '...';
+                }
+                
+                // Emit the header update
+                this.header = firstLine
+                this.$emit('updateHeader', this.id, firstLine);
             } else {
                 console.log("HandleupdateFromEditor disabled")
             }
@@ -236,7 +247,11 @@ export default {
                 event.preventDefault();
                 this.handleGenerateText();
             }
-        }
+        },
+        handleTitleChange(newTitle) {
+        // Emit the new title to update the tab header
+            this.$emit('updateHeader', this.id, newTitle);
+        },
     },
     watch: {
         header(newHeader, oldHeader) {
