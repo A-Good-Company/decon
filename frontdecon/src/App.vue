@@ -439,4 +439,52 @@ export default {
 .dark-mode .header-buttons .v-icon {
   color: var(--white) !important;
 }
+
+.tab-item {
+  position: relative;
+  padding-right: 18px !important;
+}
+
+.tab-label {
+  margin-right: 4px;
+}
+
+.tab-close {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px; /* Increased from 16px to 22px */
+  font-weight: bold; /* Makes the X bolder */
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+  transition: all 0.2s ease;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.3); /* Subtle glow in light mode */
+}
+
+.tab-close:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-50%) scale(1.1); /* Slight grow effect on hover */
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5); /* Enhanced glow on hover */
+}
+
+/* Dark mode styles */
+.dark-mode .tab-close {
+  color: var(--white);
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.3); /* Subtle glow in dark mode */
+}
+
+.dark-mode .tab-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.5); /* Enhanced glow on hover in dark mode */
+}
 </style>
+

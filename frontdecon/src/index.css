@@ -164,3 +164,8 @@
     padding: 0px
 }
 
+.v-card-text {
+    padding: 0 !important;
+}
+  
+
