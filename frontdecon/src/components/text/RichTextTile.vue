@@ -13,6 +13,7 @@
             <v-btn density="default" flat class="mx-1" size="small" color="blue" @click="handleGenerateText">{{
                 selectedContent.length > 0 ? 'Copy To New' : 'AI-Complete' }}</v-btn>
             <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">My Prompts</v-btn>
+            <voice-transcriber @transcriptionComplete="handleTranscription"/>
             <v-chip v-if="isPrompt" size="small" color="green-darken-4">
                 Prompt
             </v-chip>
@@ -69,6 +70,8 @@
 import MarkdownEditor from './MarkdownEditor.vue';
 // import TextProcessOptions from './TextProcessOptions.vue';
 import openai from '@/utils/openai'
+import VoiceTranscriber from '../VoiceTranscriber.vue'
+
 import ai from '@/utils/ai'
 import { format } from 'date-fns'
 // import {ref} from 'vue'
@@ -77,6 +80,7 @@ export default {
     components: {
         // 'rich-text-editor' : RichTextEditor,
         'markdown-editor': MarkdownEditor,
+        VoiceTranscriber,   
         // 'text-process-options': TextProcessOptions,
     },
 
@@ -130,6 +134,11 @@ export default {
 
         handleTextSelected(selectedContent) {
             this.selectedContent = selectedContent
+        },
+        handleTranscription(text) {
+            // Handle the transcribed text here
+            // For example, append it to the current content
+            this.content += text
         },
         async handleGenerateText() {
             // await openai.generateAnthropicText(this.content);

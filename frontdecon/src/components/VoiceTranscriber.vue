@@ -1,27 +1,33 @@
 <template>
-
-    <div>
-        <button class="bg-gray-200 text-gray-900  text-l rounded-md min-h-[32px] px-3 py-0.5 font-semibold hover:bg-gray-400 m-1 w-2/4 items-center"
-        @click="toggleVADdetection" :style="{ backgroundColor: isVADStarted ? 'bg-green-200' : 'bg-gray-200' }">
-            {{ isVADStarted ? 'Stop Speech Input' : 'Start Speech Input' }}
-        </button>
-    </div>
+    <v-btn
+        size="small"
+        variant="outlined"
+        :color="isVADStarted ? 'success' : 'default'"
+        @click="toggleVADdetection"
+        class="action-button"
+    >
+        <v-icon size="small" class="mr-1">
+            {{ isVADStarted ? 'mdi-microphone' : 'mdi-microphone-outline' }}
+        </v-icon>
+        {{ isVADStarted ? 'Stop' : 'Speech' }}
+    </v-btn>
 </template>
 
 <script>
 import openai from '@/utils/openai';
 import { MicVAD } from '@ricky0123/vad-web';
 import * as toWav from 'audiobuffer-to-wav';
+
 export default {
     data() {
         return {
             myvad: null,
             last240chars: 'This is a conversation. Always leave a space after sentence ends like .,?',
-            isVADStarted: false, // Add this line
+            isVADStarted: false,
         }
     },
     methods: {
-        async toggleVADdetection() { // Renamed from startVADdetection
+        async toggleVADdetection() {
             if (this.isVADStarted) {
                 this.myvad.pause();
                 this.isVADStarted = false;
@@ -67,3 +73,22 @@ export default {
     }
 }
 </script>
+
+
+<style scoped>
+.action-button {
+    margin: 4px;
+    text-transform: none;
+}
+
+.v-btn--variant-outlined {
+    background: transparent;
+    color: white;
+}
+
+/* For when speech input is active */
+.v-btn--variant-outlined.success {
+    color: rgb(var(--v-theme-success));
+    border-color: rgb(var(--v-theme-success)) !important;
+}
+</style>

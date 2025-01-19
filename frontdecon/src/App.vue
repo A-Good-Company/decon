@@ -1,24 +1,25 @@
 <template>
   <div class="app">
-    <v-tabs v-model="activeTab" background-color="primary">
-      <!-- Existing tabs -->
-      <v-tab v-for="tile in tiles" :key="`text-${tile.id}`" :value="`text-${tile.id}`" class="tab-item">
-        <span class="tab-label">{{ tile.initheader || 'Text Editor' }}</span>
-        <button class="tab-close" @click.stop="handleClose(tile.id)">×</button>
-      </v-tab>
+    <div class="header-container">
+      <v-tabs v-model="activeTab" background-color="primary">
+        <!-- Existing tabs -->
+        <v-tab v-for="tile in tiles" :key="`text-${tile.id}`" :value="`text-${tile.id}`" class="tab-item">
+          <span class="tab-label">{{ tile.initheader || 'Text Editor' }}</span>
+          <button class="tab-close" @click.stop="handleClose(tile.id)">×</button>
+        </v-tab>
 
-      <v-tab v-for="tile in chatTiles" :key="`chat-${tile.id}`" :value="`chat-${tile.id}`" class="tab-item">
-        <span class="tab-label">{{ tile.initheader || 'Chat' }}</span>
-        <button class="tab-close" @click.stop="handleChatTileClose(tile.id)">×</button>
-      </v-tab>
+        <v-tab v-for="tile in chatTiles" :key="`chat-${tile.id}`" :value="`chat-${tile.id}`" class="tab-item">
+          <span class="tab-label">{{ tile.initheader || 'Chat' }}</span>
+          <button class="tab-close" @click.stop="handleChatTileClose(tile.id)">×</button>
+        </v-tab>
 
-      <v-tab v-for="tile in mediaTiles" :key="`media-${tile.id}`" :value="`media-${tile.id}`" class="tab-item">
-        <span class="tab-label">{{ tile.file?.name || 'Media' }}</span>
-        <button class="tab-close" @click.stop="handleMediaClose(tile.id)">×</button>
-      </v-tab>
+        <v-tab v-for="tile in mediaTiles" :key="`media-${tile.id}`" :value="`media-${tile.id}`" class="tab-item">
+          <span class="tab-label">{{ tile.file?.name || 'Media' }}</span>
+          <button class="tab-close" @click.stop="handleMediaClose(tile.id)">×</button>
+        </v-tab>
+      </v-tabs>
 
-      <!-- Add new tab button -->
-      <div class="new-tab-button">
+      <div class="header-buttons">
         <v-btn
           variant="text"
           icon
@@ -28,16 +29,7 @@
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
-      </div>
-
-      <new-tab-dialog
-        ref="newTabDialog"
-        @create-text-tile="addTile"
-        @create-chat-tile="addNewChatTile"
-        @load-file="loadFile"
-      />
-
-      <div class="settings-button">
+        
         <v-btn
           variant="text"
           icon
@@ -48,7 +40,15 @@
           <v-icon>mdi-cog</v-icon>
         </v-btn>
       </div>
-    </v-tabs>
+    </div>
+
+    <new-tab-dialog
+      ref="newTabDialog"
+      @create-text-tile="addTile"
+      @create-chat-tile="addNewChatTile"
+      @load-file="loadFile"
+    />
+
 
 
     <v-window v-model="activeTab">
@@ -100,11 +100,10 @@
 
       <media-loader />
       <media-recorder @audioFile="loadFile" />
-      <voice-transcriber></voice-transcriber>
       <app-settings v-if="showModal" @hideSettings="hideSettings" />
       <universal-playback v-if="mediaTiles.length >= 1" />
     </div>
-  </div>
+    </div>
 </template>
 
 
@@ -117,7 +116,6 @@ import UniversalPlayback from './components/UniversalPlayback.vue';
 // import AppSettings from './components/AppSettings.vue';
 import MediaRecorder from './components/MediaRecorder.vue';
 import AppSettings from './components/AppSettings.vue';
-import VoiceTranscriber from './components/VoiceTranscriber.vue';
 import ChatTile from './components/text/ChatTile.vue';
 import NewTabDialog from './components/NewTabDialog.vue'
 
@@ -132,7 +130,6 @@ export default {
     // 'app-settings': AppSettings,
     'media-recorder': MediaRecorder,
     'app-settings': AppSettings,
-    'voice-transcriber' : VoiceTranscriber,
     'chat-tile' : ChatTile,
     'new-tab-dialog': NewTabDialog,
 
@@ -375,12 +372,9 @@ export default {
   display: flex;
   align-items: center;
   margin-left: auto;
-  padding-right: 16px;
+  padding-right: 48px;
 }
 
-.new-tab-button .v-btn {
-  border-radius: 4px;
-}
 
 /* Dark mode styles for the new button */
 .dark-mode .new-tab-button .v-btn {
@@ -409,4 +403,45 @@ export default {
 .dark-mode .settings-button .v-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+.v-tabs {
+  padding-right: 48px; /* Make space for settings button */
+}
+
+
+.header-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: primary;
+}
+
+.v-tabs {
+  flex-grow: 1;
+  padding-right: 100px; /* Make space for the buttons */
+}
+
+.header-buttons {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0 px;
+  z-index: 1;
+}
+
+.dark-mode .header-buttons .v-btn {
+  color: var(--white) !important;
+}
+
+.dark-mode .header-buttons .v-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .header-buttons .v-icon {
+  color: var(--white) !important;
+}
+
 </style>
