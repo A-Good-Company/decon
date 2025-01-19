@@ -30,11 +30,11 @@
         </v-btn>
       </div>
 
-      <!-- Add the dialog component -->
       <new-tab-dialog
         ref="newTabDialog"
         @create-text-tile="addTile"
         @create-chat-tile="addNewChatTile"
+        @load-file="loadFile"
       />
 
       <div class="settings-button">
@@ -96,15 +96,7 @@
     </v-window>
 
     <div class="controls-panel">
-      <div class="file-controls">
-        <input @change="clickLoadFile" type="file" id="file">
-        <label class="file-label" for="file">Load file</label>
-      </div>
-      
-      <div class="action-buttons">
-        <themed-button type="new" @clickButton="addTile">New Text Editor</themed-button>
-        <themed-button type="new" @clickButton="addNewChatTile">New Chat</themed-button>
-      </div>
+
 
       <media-loader />
       <media-recorder @audioFile="loadFile" />
@@ -122,7 +114,6 @@ import RichTextTile from './components/text/RichTextTile.vue';
 import VideoTile from './components/VideoTile.vue';
 // import AudioPlayer from './components/AudioPlayer.vue';
 import UniversalPlayback from './components/UniversalPlayback.vue';
-import ThemedButton from './components/items/ThemedButton.vue';
 // import AppSettings from './components/AppSettings.vue';
 import MediaRecorder from './components/MediaRecorder.vue';
 import AppSettings from './components/AppSettings.vue';
@@ -138,7 +129,6 @@ export default {
     'video-tile': VideoTile,
     // 'audio-player': AudioPlayer,
     'universal-playback': UniversalPlayback,
-    'themed-button': ThemedButton,
     // 'app-settings': AppSettings,
     'media-recorder': MediaRecorder,
     'app-settings': AppSettings,
@@ -231,6 +221,7 @@ export default {
     loadFile(file) {
       // If file size and type are valid, create a data URL
       // and assign it to videoSrc data property
+      console.log("load ile called")
       let reader = new FileReader();
       reader.onload = e => {
         const fileContent = e.target.result;

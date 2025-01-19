@@ -1,9 +1,7 @@
 <template>
     <v-dialog v-model="dialog" max-width="500px">
-      <v-card :theme="isDark ? 'dark' : 'light'" class="new-tile-dialog">
-        <v-card-title>
-          Create New Tile
-        </v-card-title>
+      <v-card>
+        <v-card-title>Create New Tab</v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
@@ -11,19 +9,38 @@
                 <v-btn
                   block
                   color="primary"
-                  @click="createTextTile"
+                  @click="createTextEditor"
                 >
                   New Text Editor
                 </v-btn>
               </v-col>
+              
               <v-col cols="12">
                 <v-btn
                   block
-                  color="secondary"
+                  color="primary"
                   @click="createChatTile"
                 >
                   New Chat
                 </v-btn>
+              </v-col>
+  
+              <v-col cols="12">
+                <div class="file-controls">
+                  <input
+                    @change="handleFileLoad"
+                    type="file"
+                    id="file-upload"
+                    style="display: none"
+                  >
+                  <v-btn
+                    block
+                    color="primary"
+                    @click="triggerFileInput"
+                  >
+                    Load File
+                  </v-btn>
+                </div>
               </v-col>
             </v-row>
           </v-container>
@@ -31,10 +48,11 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            variant="text"
+            color="grey"
+            text
             @click="closeDialog"
           >
-            Cancel
+            Close
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -43,27 +61,31 @@
   
   <script>
   export default {
-    name: 'NewTileDialog',
     data() {
       return {
         dialog: false,
-        isDark: document.body.classList.contains('dark-mode')
       }
     },
     methods: {
       showDialog() {
-        this.isDark = document.body.classList.contains('dark-mode')
         this.dialog = true
       },
       closeDialog() {
         this.dialog = false
       },
-      createTextTile() {
+      createTextEditor() {
         this.$emit('create-text-tile')
         this.closeDialog()
       },
       createChatTile() {
         this.$emit('create-chat-tile')
+        this.closeDialog()
+      },
+      triggerFileInput() {
+        document.getElementById('file-upload').click()
+      },
+      handleFileLoad(event) {
+        this.$emit('load-file', event.target.files[0])
         this.closeDialog()
       }
     }
@@ -71,7 +93,7 @@
   </script>
   
   <style scoped>
-  .new-tile-dialog {
-    border-radius: 8px;
+  .file-controls {
+    width: 100%;
   }
   </style>

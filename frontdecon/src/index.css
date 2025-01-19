@@ -121,3 +121,36 @@
     caret-shape: block; /* Makes the caret a block instead of a line */
     caret-width: 2px; 
   }
+
+
+
+/* Style for select elements in dark mode */
+.dark-mode select,
+.dark-mode .v-select__selections,
+.dark-mode .v-select__selection-text,
+.dark-mode .v-select__selection,
+.dark-mode .v-select__selection-item {
+    color: var(--white) !important;
+    background-color: var(--dark) !important;
+}
+
+/* Style for the select dropdown in dark mode */
+.dark-mode .v-select__menu-content,
+.dark-mode .v-list,
+.dark-mode .v-list-item {
+    background-color: var(--dark) !important;
+    color: var(--white) !important;
+}
+
+/* Style for select options in dark mode */
+.dark-mode select option {
+    background-color: var(--dark);
+    color: var(--white);
+}
+
+/* Style for the select when focused/active in dark mode */
+.dark-mode select:focus,
+.dark-mode select:active {
+    border-color: var(--white);
+    color: var(--white);
+}
