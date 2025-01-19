@@ -23,12 +23,19 @@
           variant="text"
           icon
           size="small"
-          @click="addTile"
+          @click="showNewTabDialog"
           class="ml-2"
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </div>
+
+      <!-- Add the dialog component -->
+      <new-tab-dialog
+        ref="newTabDialog"
+        @create-text-tile="addTile"
+        @create-chat-tile="addNewChatTile"
+      />
 
       <div class="settings-button">
         <v-btn
@@ -121,6 +128,8 @@ import MediaRecorder from './components/MediaRecorder.vue';
 import AppSettings from './components/AppSettings.vue';
 import VoiceTranscriber from './components/VoiceTranscriber.vue';
 import ChatTile from './components/text/ChatTile.vue';
+import NewTabDialog from './components/NewTabDialog.vue'
+
 
 
 export default {
@@ -134,7 +143,9 @@ export default {
     'media-recorder': MediaRecorder,
     'app-settings': AppSettings,
     'voice-transcriber' : VoiceTranscriber,
-    'chat-tile' : ChatTile
+    'chat-tile' : ChatTile,
+    'new-tab-dialog': NewTabDialog,
+
   },
 
   data() {
@@ -274,6 +285,9 @@ export default {
     hideSettings() {
       console.log("settings config");
       this.showModal = false;
+    },
+    showNewTabDialog() {
+      this.$refs.newTabDialog.showDialog()
     },
   },
   mounted() {
