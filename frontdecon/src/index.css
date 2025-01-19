@@ -154,3 +154,11 @@
     border-color: var(--white);
     color: var(--white);
 }
+
+.cm-scroller {
+    padding: 0px
+}
+
+.v-window {
+    padding: 0px
+}
