@@ -231,7 +231,12 @@ export default {
                 this.tileColor = 'default';
             }
         },
-        
+        onKeyDown(event) {
+            if (event.altKey && event.key === 'Enter') {
+                event.preventDefault();
+                this.handleGenerateText();
+            }
+        }
     },
     watch: {
         header(newHeader, oldHeader) {
@@ -277,9 +282,13 @@ export default {
     mounted() {
         this.isPinned = !!this.$store.state.pinnedItems[this.myKey];
         this.updateTileAppearance();
+        window.addEventListener('keydown', this.onKeyDown);
+
     },
     errorCaptured() {
         this.lockContentUpdates = false;
+        window.removeEventListener('keydown', this.onKeyDown);
+
     },
 };
 </script>
