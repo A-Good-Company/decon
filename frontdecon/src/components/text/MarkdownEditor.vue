@@ -71,6 +71,7 @@ export default {
   --ink-editor-line-height: 20px;
   --ink-block-padding: 0rem;
   --ink-block-max-height: 30em;
+  --ink-block-background-color: #2a2a2a;
   max-height: 70vh;
   overflow-y: auto;
 }

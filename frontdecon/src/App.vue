@@ -94,14 +94,15 @@
         />
       </v-window-item>
     </v-window>
+    <app-settings v-if="showModal" @hideSettings="hideSettings" />
+<!-- 
 
     <div class="controls-panel">
 
 
       <media-loader />
-      <app-settings v-if="showModal" @hideSettings="hideSettings" />
       <universal-playback v-if="mediaTiles.length >= 1" />
-    </div>
+    </div> -->
     </div>
 </template>
 
@@ -111,7 +112,6 @@
 import RichTextTile from './components/text/RichTextTile.vue';
 import VideoTile from './components/VideoTile.vue';
 // import AudioPlayer from './components/AudioPlayer.vue';
-import UniversalPlayback from './components/UniversalPlayback.vue';
 // import AppSettings from './components/AppSettings.vue';
 import AppSettings from './components/AppSettings.vue';
 import ChatTile from './components/text/ChatTile.vue';
@@ -124,7 +124,6 @@ export default {
     'rich-text-tile': RichTextTile,
     'video-tile': VideoTile,
     // 'audio-player': AudioPlayer,
-    'universal-playback': UniversalPlayback,
     // 'app-settings': AppSettings,
     'app-settings': AppSettings,
     'chat-tile' : ChatTile,
