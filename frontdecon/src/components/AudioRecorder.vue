@@ -26,7 +26,8 @@ export default {
             mediaRecorder: null,
             audioChunks: [],
             timer: 0,
-            timerInterval: null
+            timerInterval: null,
+            MAX_RECORDING_TIME: 300 // in seconds
         }
     },
     computed: {
@@ -37,61 +38,81 @@ export default {
         }
     },
     methods: {
+        async toggleRecording() {
+            if (!this.isRecording) {
+                await this.startRecording()
+            } else {
+                await this.stopRecording()
+            }
+        },
 
-      async toggleRecording() {
-        if (!this.isRecording) {
-          await this.startRecording()
-        } else {
-          await this.stopRecording()
-        }
-      },
-      async startRecording() {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-          this.mediaRecorder = new MediaRecorder(stream)
-          this.audioChunks = []
-  
-          this.mediaRecorder.ondataavailable = (event) => {
-            this.audioChunks.push(event.data)
-          }
-  
-          this.mediaRecorder.onstop = async () => {
+        async startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+                this.mediaRecorder = new MediaRecorder(stream)
+                this.audioChunks = []
+
+                this.mediaRecorder.ondataavailable = (event) => {
+                    this.audioChunks.push(event.data)
+                }
+
+                this.mediaRecorder.onstop = async () => {
+                    await this.processAudioChunks()
+                }
+
+                this.mediaRecorder.start()
+                this.isRecording = true
+                this.startTimer()
+            } catch (error) {
+                console.error('Error accessing microphone:', error)
+            }
+        },
+
+        async processAudioChunks() {
             const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' })
             const result = await openai.detectTextFromAudioBlob(audioBlob)
             this.$emit('transcription', result.text)
-          }
-  
-          this.mediaRecorder.start()
-          this.isRecording = true
-          this.startTimer()
-        } catch (error) {
-          console.error('Error accessing microphone:', error)
+            
+            // Clear chunks for next recording
+            this.audioChunks = []
+        },
+
+        async stopRecording(autoRestart = false) {
+            if (this.mediaRecorder && this.isRecording) {
+                this.mediaRecorder.stop()
+                this.isRecording = false
+                this.stopTimer()
+                
+                // Stop all tracks in the stream
+                this.mediaRecorder.stream.getTracks().forEach(track => track.stop())
+
+                // If auto-restart is true, start a new recording
+                if (autoRestart) {
+                    await this.startRecording()
+                }
+            }
+        },
+
+        startTimer() {
+            this.timer = 0
+            this.timerInterval = setInterval(async () => {
+                this.timer++
+                
+                // If we've reached the maximum recording time
+                if (this.timer >= this.MAX_RECORDING_TIME) {
+                    await this.stopRecording(true) // Stop and auto-restart
+                }
+            }, 1000)
+        },
+
+        stopTimer() {
+            clearInterval(this.timerInterval)
         }
-      },
-      async stopRecording() {
-        if (this.mediaRecorder && this.isRecording) {
-          this.mediaRecorder.stop()
-          this.isRecording = false
-          this.stopTimer()
-          
-          // Stop all tracks in the stream
-          this.mediaRecorder.stream.getTracks().forEach(track => track.stop())
-        }
-      },
-      startTimer() {
-        this.timer = 0
-        this.timerInterval = setInterval(() => {
-          this.timer++
-        }, 1000)
-      },
-      stopTimer() {
-        clearInterval(this.timerInterval)
-      }
     },
     beforeUnmount() {
         this.stopTimer()
         if (this.mediaRecorder && this.isRecording) {
-            this.stopRecording()
+            this.stopRecording(false) // Stop without auto-restart
         }
     }
 }

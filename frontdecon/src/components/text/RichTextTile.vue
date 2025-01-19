@@ -8,7 +8,6 @@
                 @updateContent="handleUpdateContentFromEditor" @textSelected="handleTextSelected"
                 :readonly="isEditorReadOnly" />
             <!-- <my-button type="close" @clickButton="close">Close</my-button> -->
-            <v-btn density="default" flat class="mx-1" size="small" color="pink" @click="close">Close</v-btn>
             <!-- <my-button type="default" @clickButton="handleGenerateText">Hallucinate</my-button> -->
             <v-btn density="default" flat class="mx-1" size="small" color="blue" @click="handleGenerateText">{{
                 selectedContent.length > 0 ? 'Copy To New' : 'AI-Complete' }}</v-btn>
@@ -48,12 +47,6 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-            <v-btn variant="outlined" size="small" class="mx-1 my-1 outline-white-btn" @click="handleMessageClick">
-                {{ $store.state.model }}, {{ $store.state.tokenCount }} tokens
-            </v-btn>
-            <!-- <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
-        <label :for="'pin-checkbox-' + id">Pin</label>
-        <label v-if="isPrompt"> Prompt</label> -->
             <v-chip size="small" color="purple" class="purple-dark-btn">
                 <input type="checkbox" :id="'pin-checkbox-' + id" :value="isPinned ? 'Pinned' : 'Pin'"
                     v-model="isPinned" class="mr-2">
@@ -61,6 +54,16 @@
             </v-chip>
             <!-- <my-button type="default" @clickButton="saveContent">Download</my-button> -->
             <v-btn class="mx-1" size="small" flat color="purple" @click="saveContent">Download</v-btn>
+            <v-btn variant="outlined" size="small" class="mx-1 my-1 outline-white-btn" @click="handleMessageClick">
+                <v-icon size="small" class="mr-1">mdi-microphone</v-icon>
+                {{$store.state.whisperLanguage}} | 
+                <v-icon size="small" class="mx-1">mdi-text</v-icon>
+                {{ $store.state.model }}, {{ $store.state.tokenCount }}t
+            </v-btn>
+            <!-- <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
+        <label :for="'pin-checkbox-' + id">Pin</label>
+        <label v-if="isPrompt"> Prompt</label> -->
+            
         </v-card-text>
     </v-card>
 </template>
