@@ -1,24 +1,36 @@
 <template>
   <div class="app">
     <v-tabs v-model="activeTab" background-color="primary">
-      <!-- Dynamic tabs for text editors -->
+      <!-- Existing tabs -->
       <v-tab v-for="tile in tiles" :key="`text-${tile.id}`" :value="`text-${tile.id}`" class="tab-item">
         <span class="tab-label">{{ tile.initheader || 'Text Editor' }}</span>
         <button class="tab-close" @click.stop="handleClose(tile.id)">×</button>
       </v-tab>
 
-      <!-- Dynamic tabs for chat -->
       <v-tab v-for="tile in chatTiles" :key="`chat-${tile.id}`" :value="`chat-${tile.id}`" class="tab-item">
         <span class="tab-label">{{ tile.initheader || 'Chat' }}</span>
         <button class="tab-close" @click.stop="handleChatTileClose(tile.id)">×</button>
       </v-tab>
 
-      <!-- Dynamic tabs for media -->
       <v-tab v-for="tile in mediaTiles" :key="`media-${tile.id}`" :value="`media-${tile.id}`" class="tab-item">
         <span class="tab-label">{{ tile.file?.name || 'Media' }}</span>
         <button class="tab-close" @click.stop="handleMediaClose(tile.id)">×</button>
       </v-tab>
+
+      <!-- Add new tab button -->
+      <div class="new-tab-button">
+        <v-btn
+          variant="text"
+          icon
+          size="small"
+          @click="addTile"
+          class="ml-2"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </div>
     </v-tabs>
+
 
     <v-window v-model="activeTab">
       <!-- Text editor tab contents -->
@@ -341,5 +353,25 @@ export default {
 .dark-mode .file-label {
   background-color: var(--dark);
   color: var(--white);
+}
+
+.new-tab-button {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding-right: 16px;
+}
+
+.new-tab-button .v-btn {
+  border-radius: 4px;
+}
+
+/* Dark mode styles for the new button */
+.dark-mode .new-tab-button .v-btn {
+  color: var(--white);
+}
+
+.dark-mode .new-tab-button .v-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 </style>
