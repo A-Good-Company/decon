@@ -85,6 +85,8 @@ export default {
                                 range.insertNode(textNode);
 
                                 selection.removeAllRanges();
+                            } else {
+                                this.$emit('transcription', detectedText)
                             }
                         }
                     },

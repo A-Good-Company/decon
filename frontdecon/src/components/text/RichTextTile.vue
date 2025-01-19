@@ -13,7 +13,7 @@
             <v-btn density="default" flat class="mx-1" size="small" color="blue" @click="handleGenerateText">{{
                 selectedContent.length > 0 ? 'Copy To New' : 'AI-Complete' }}</v-btn>
             <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">My Prompts</v-btn>
-            <voice-transcriber @transcriptionComplete="handleTranscription"/>
+            <voice-transcriber @transcription="handleTranscription"/>
             <audio-recorder @transcription="handleTranscription" />
 
             <v-chip v-if="isPrompt" size="small" color="green-darken-4">
