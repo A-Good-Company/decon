@@ -1,37 +1,87 @@
 <template>
-
   <div class="app">
-    <div class="chat-tiles-grid chatTile">
-      <chat-tile v-for="tile in chatTiles" :key="tile.id" :myKey="tile.id" :id="tile.id" 
-        :initheader="tile.initheader" :initcontent="tile.initcontent" 
-        :ref="`chatTile-${tile.id}`" @close="handleChatTileClose" 
-        @openSettings="showSettings" @newChatTile="addNewChatTile"/>
-    </div>
-    <div class="tiles-grid richTextTile dark-outline-card">
-      <rich-text-tile v-for="tile in tiles" :key="tile.id" :myKey="tile.id" :id="tile.id" :initheader="tile.initheader"
-        :initcontent="tile.initcontent" :ref="`richTextTile-${tile.id}`" @close="handleClose"
-        @openSettings="showSettings" @newTile="addLoadedTile" @newHeadedTile="addLoadedTileWithHeader" />
-    </div>
-    <div class="vid-tiles-grid mediaTile">
-      <video-tile v-for="(tile, index) in mediaTiles" :key="tile.id" :myKey="tile.id" :id="index + 1" :mime="tile.mime"
-        :file="tile.file" :fileContent="tile.fileContent" :ref="`videoTile-${tile.id}`" @close="handleMediaClose"
-        @newTextTile="addLoadedTileWithHeader" @newMediaTile="loadUrl" @openSettings="showSettings" />
-    </div>
-    <media-loader />
-    <input @change="clickLoadFile" type="file" id="file">
-    <label
-      class="bg-gray-200 text-gray-900 text-l rounded-md min-h-[32px] px-3 py-0.5 font-semibold hover:bg-gray-400 m-1 w-2/4  flex justify-center items-center filelabel"
-      for="file">Load file</label>
+    <v-tabs v-model="activeTab" background-color="primary">
+      <!-- Dynamic tabs for text editors -->
+      <v-tab v-for="tile in tiles" :key="`text-${tile.id}`" :value="`text-${tile.id}`" class="tab-item">
+        <span class="tab-label">{{ tile.initheader || 'Text Editor' }}</span>
+        <button class="tab-close" @click.stop="handleClose(tile.id)">×</button>
+      </v-tab>
 
-    <themed-button type="new" @clickButton="addTile">New Text Tile</themed-button>
-    <themed-button type="new" @clickButton="addNewChatTile">New Chat Tile</themed-button>
+      <!-- Dynamic tabs for chat -->
+      <v-tab v-for="tile in chatTiles" :key="`chat-${tile.id}`" :value="`chat-${tile.id}`" class="tab-item">
+        <span class="tab-label">{{ tile.initheader || 'Chat' }}</span>
+        <button class="tab-close" @click.stop="handleChatTileClose(tile.id)">×</button>
+      </v-tab>
 
-    <media-recorder @audioFile="loadFile" />
-    <!-- <app-settings v-if="showModal" @closeModal="showModal = false" @applySettings="saveSettings" /> -->
-    <themed-button type="new" @clickButton="showSettings">Settings</themed-button>
-    <voice-transcriber></voice-transcriber>
-    <app-settings v-if="showModal" @hideSettings="hideSettings" />
-    <universal-playback v-if="mediaTiles.length >= 1" />
+      <!-- Dynamic tabs for media -->
+      <v-tab v-for="tile in mediaTiles" :key="`media-${tile.id}`" :value="`media-${tile.id}`" class="tab-item">
+        <span class="tab-label">{{ tile.file?.name || 'Media' }}</span>
+        <button class="tab-close" @click.stop="handleMediaClose(tile.id)">×</button>
+      </v-tab>
+    </v-tabs>
+
+    <v-window v-model="activeTab">
+      <!-- Text editor tab contents -->
+      <v-window-item v-for="tile in tiles" :key="`text-${tile.id}`" :value="`text-${tile.id}`">
+        <rich-text-tile
+          :myKey="tile.id"
+          :id="tile.id"
+          :initheader="tile.initheader"
+          :initcontent="tile.initcontent"
+          :ref="`richTextTile-${tile.id}`"
+          @openSettings="showSettings"
+          @newTile="addLoadedTile"
+          @newHeadedTile="addLoadedTileWithHeader"
+        />
+      </v-window-item>
+
+      <!-- Chat tab contents -->
+      <v-window-item v-for="tile in chatTiles" :key="`chat-${tile.id}`" :value="`chat-${tile.id}`">
+        <chat-tile
+          :myKey="tile.id"
+          :id="tile.id"
+          :initheader="tile.initheader"
+          :initcontent="tile.initcontent"
+          :ref="`chatTile-${tile.id}`"
+          @openSettings="showSettings"
+          @newChatTile="addNewChatTile"
+        />
+      </v-window-item>
+
+      <!-- Media tab contents -->
+      <v-window-item v-for="tile in mediaTiles" :key="`media-${tile.id}`" :value="`media-${tile.id}`">
+        <video-tile
+          :myKey="tile.id"
+          :id="tile.id"
+          :mime="tile.mime"
+          :file="tile.file"
+          :fileContent="tile.fileContent"
+          :ref="`videoTile-${tile.id}`"
+          @newTextTile="addLoadedTileWithHeader"
+          @newMediaTile="loadUrl"
+          @openSettings="showSettings"
+        />
+      </v-window-item>
+    </v-window>
+
+    <div class="controls-panel">
+      <div class="file-controls">
+        <input @change="clickLoadFile" type="file" id="file">
+        <label class="file-label" for="file">Load file</label>
+      </div>
+      
+      <div class="action-buttons">
+        <themed-button type="new" @clickButton="addTile">New Text Editor</themed-button>
+        <themed-button type="new" @clickButton="addNewChatTile">New Chat</themed-button>
+        <themed-button type="new" @clickButton="showSettings">Settings</themed-button>
+      </div>
+
+      <media-loader />
+      <media-recorder @audioFile="loadFile" />
+      <voice-transcriber></voice-transcriber>
+      <app-settings v-if="showModal" @hideSettings="hideSettings" />
+      <universal-playback v-if="mediaTiles.length >= 1" />
+    </div>
   </div>
 </template>
 
@@ -66,6 +116,7 @@ export default {
 
   data() {
     return {
+      activeTab: null,
       chatTiles: [],
       nextChatId: 1,
       tiles: [],
@@ -81,7 +132,9 @@ export default {
   },
   methods: {
     addTile() {
-      this.addLoadedTile('');
+      const id = Date.now();
+      this.tiles.push({ id, initcontent: '' });
+      this.activeTab = `text-${id}`;
     },
     addLoadedTile(content) {
       let uniqueId = Date.now();
@@ -168,25 +221,19 @@ export default {
       }
     },
 
-    addNewChatTile(header, content) {
-      let id = Date.now();
-      console.log(`id: ${id}, header: ${header}, content: ${content}`)
-      this.chatTiles.push({ id: id, initheader: header, initcontent: content });
-      this.$nextTick(() => {
-        this.$refs[`chatTile-${id}`][0].$el.focus();
-        this.$refs[`chatTile-${id}`][0].$el.scrollIntoView({ behavior: "smooth" });
-      });
+    addNewChatTile(header = '', content = '') {
+      const id = Date.now();
+      this.chatTiles.push({ id, initheader: header, initcontent: content });
+      this.activeTab = `chat-${id}`;
     },
 
     handleChatTileClose(idToRemove) {
       this.chatTiles = this.chatTiles.filter(tile => tile.id !== idToRemove);
     },
     addMediaTile(mediaType, fileContent, file) {
-      this.mediaTiles.push({ id: this.nextVidId++, mime: mediaType, fileContent: fileContent, file: file });
-      this.$nextTick(() => {
-        this.$refs[`videoTile-${this.nextVidId - 1}`][0].$el.focus();
-        this.$refs[`videoTile-${this.nextVidId - 1}`][0].$el.scrollIntoView({ behavior: "smooth" });
-      });
+      const id = this.nextVidId++;
+      this.mediaTiles.push({ id, mime: mediaType, fileContent, file });
+      this.activeTab = `media-${id}`;
     },
     handleMediaClose(idToRemove) {
       this.mediaTiles = this.mediaTiles.filter(tile => tile.id !== idToRemove);
@@ -231,30 +278,42 @@ export default {
 
 
 <style>
-.richTextTile {
-  width: 100%;
-}
-
-.mediaTile {
-  width: 100%;
-}
-
-button {
-  padding: 2px;
-  border-radius: 10%;
-  padding-right: 4px;
-  background-color: rgb(124, 204, 104);
-  color: rgb(201, 81, 81);
-}
-
 .app {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-bottom: 50px;
-
+  height: 100vh;
 }
 
+.v-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.controls-panel {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  background-color: #f5f5f5;
+}
+
+.file-controls {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.file-label {
+  background-color: #e0e0e0;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
 #file {
   width: 0.1px;
@@ -263,5 +322,24 @@ button {
   overflow: hidden;
   position: absolute;
   z-index: -1;
+}
+
+/* Dark mode styles */
+.dark-mode .v-tabs {
+  background-color: var(--dark);
+}
+
+.dark-mode .v-tab {
+  color: var(--white);
+}
+
+.dark-mode .controls-panel {
+  background-color: var(--semi-dark);
+  border-color: var(--gray);
+}
+
+.dark-mode .file-label {
+  background-color: var(--dark);
+  color: var(--white);
 }
 </style>
