@@ -4,7 +4,27 @@ import store from '@/utils/stores'
 const errorMessage = "An error occurred while calling Replicate API, which our app uses for AI functions. The issue might be due to browser restrictions. To bypass this, we're using a proxy server. Please visit https://cors-anywhere.herokuapp.com to enable access. If it persists, fetching another Replicate key could also resolve the issue."
 
 const POLLING_INTERVAL = 20000; // ms
-const MAX_POLLING_ATTEMPTS = 300; // s
+const MAX_POLLING_ATTEMPTS = 20; // 
+
+const MODEL_VERSIONS = {
+    'replicate-wizard': {
+        version: 'a4be2a7c75e51c53b22167d44de3333436f1aa9253a201d2619cf74286478599',
+        streaming: false,
+        inputParam: 'message'
+    },
+    'replicate-neuralbeagle': {
+        version: '4c5eaa791be134c9711ea3a93e62f699540f733fd83c3a2d3df21be42dbdda25',
+        streaming: true,
+        inputParam: 'prompt'
+    },
+    'replicate-myneuralbeagle': {
+        isDeployment: true, // New flag to indicate this is a deployment
+        owner: 'a-good-company',
+        model: 'decon',
+        streaming: true,
+        inputParam: 'prompt'
+    }
+};
 
 const replicateService = {
     async submitReplicateSplitDemucs(file) {
@@ -93,43 +113,49 @@ const replicateService = {
     
     async generateText(prompt, callback) {
         console.log('Starting generateText with prompt:', prompt);
-
-        console.log('model selected:', store.state.model)
-
-        const MODEL_VERSIONS = {
-            'replicate-wizard': 'a4be2a7c75e51c53b22167d44de3333436f1aa9253a201d2619cf74286478599',
-            'replicate-neuralbeagle': '4c5eaa791be134c9711ea3a93e62f699540f733fd83c3a2d3df21be42dbdda25'
-            // Add more models as needed
-        };
-
-        const versionId = MODEL_VERSIONS[store.state.model];
-
-        console.log("Hitting version:", versionId)
+        console.log('model selected:', store.state.model);
+    
+        const modelConfig = MODEL_VERSIONS[store.state.model];
+        if (!modelConfig) {
+            throw new Error('Invalid model selected');
+        }
+    
+        console.log("Using model config:", modelConfig);
         
-        const requestData = {
-            version: versionId,
-            input: {
-                prompt: prompt,
-                temperature: 0.1
-            },
-            stream: true
+        // Create input object based on model's required parameter name
+        const input = {
+            [modelConfig.inputParam]: prompt,
+            temperature: 0.1
         };
-
+    
+        // Prepare request data differently for deployments vs regular models
+        const requestData = modelConfig.isDeployment ? {
+            input: input,
+            stream: modelConfig.streaming
+        } : {
+            version: modelConfig.version,
+            input: input,
+            stream: modelConfig.streaming
+        };
+    
         try {
-            // Initial prediction request
             const predictionResponse = await this.makePredictionRequest(requestData);
             const prediction = predictionResponse.data;
             
-            // Wait for model to be ready
             const readyPrediction = await this.waitForModelReady(prediction.id);
             
             if (readyPrediction.status === 'failed') {
                 throw new Error('Prediction failed');
             }
-
-            // Now that model is ready, start streaming
-            return this.handleStreaming(readyPrediction.urls.stream, callback);
-
+    
+            if (modelConfig.streaming && callback) {
+                return this.handleStreaming(readyPrediction.urls.stream, callback);
+            } else {
+                const result = readyPrediction.output;
+                if (callback) callback(result);
+                return result;
+            }
+    
         } catch (error) {
             console.error('Error in generateText:', error);
             console.error('Error stack:', error.stack);
@@ -140,9 +166,20 @@ const replicateService = {
 
     async makePredictionRequest(requestData) {
         console.log('Making prediction request to Replicate API...');
+        
+        const modelConfig = MODEL_VERSIONS[store.state.model];
+        let url = 'https://cors-anywhere.herokuapp.com/https://api.replicate.com/v1/';
+        
+        // Adjust URL and request data based on whether it's a deployment or regular model
+        if (modelConfig.isDeployment) {
+            url += `deployments/${modelConfig.owner}/${modelConfig.model}/predictions`;
+        } else {
+            url += 'predictions';
+        }
+    
         return axios({
             method: 'post',
-            url: 'https://cors-anywhere.herokuapp.com/https://api.replicate.com/v1/predictions',
+            url: url,
             headers: {
                 'Authorization': `Token ${store.state.replicateKey}`,
                 'Content-Type': 'application/json'
@@ -213,14 +250,19 @@ const replicateService = {
     },
     
     
-    // Add this method for non-streaming text generation
     async generateTextSync(prompt) {
+        const modelConfig = MODEL_VERSIONS[store.state.model];
+        const INITIAL_DELAY = 2000; // 2 seconds
+        const MAX_DELAY = 16000;    // 16 seconds
+        
+        const input = {
+            [modelConfig.inputParam]: prompt,
+            temperature: 0.1
+        };
+    
         const data = {
-            version: "4c5eaa791be134c9711ea3a93e62f699540f733fd83c3a2d3df21be42dbdda25",
-            input: {
-                prompt: prompt,
-                temperature: 0.1
-            }
+            version: modelConfig.version,
+            input: input
         };
     
         try {
@@ -234,10 +276,21 @@ const replicateService = {
                 data: data
             });
     
-            // Poll for completion
             let prediction = response.data;
-            while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
-                await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('Initial prediction response:', JSON.stringify(prediction, null, 2));
+            
+            let attempts = 0;
+            let currentDelay = INITIAL_DELAY;
+    
+            while (prediction.status !== 'succeeded' && 
+                   prediction.status !== 'failed' && 
+                   attempts < MAX_POLLING_ATTEMPTS) {
+                
+                const delayToUse = Math.min(currentDelay * Math.pow(2, attempts), MAX_DELAY);
+                console.log(`Polling attempt ${attempts + 1}, waiting ${delayToUse/1000} seconds...`);
+                
+                await new Promise(resolve => setTimeout(resolve, delayToUse));
+                
                 const pollResponse = await axios.get(
                     `https://cors-anywhere.herokuapp.com/https://api.replicate.com/v1/predictions/${prediction.id}`,
                     {
@@ -246,22 +299,37 @@ const replicateService = {
                         }
                     }
                 );
+                
                 prediction = pollResponse.data;
+                console.log(`Poll ${attempts + 1} response:`, JSON.stringify(prediction, null, 2));
+                console.log(`Current status: ${prediction.status}`);
+                
+                if (prediction.error) {
+                    console.error('Error detected:', prediction.error);
+                }
+                
+                attempts += 1;
             }
     
             if (prediction.status === 'succeeded') {
+                console.log('Generation succeeded. Final output:', prediction.output);
                 return prediction.output;
-            } else {
+            } else if (prediction.status === 'failed') {
+                console.error('Generation failed. Final state:', JSON.stringify(prediction, null, 2));
                 throw new Error('Prediction failed');
+            } else {
+                console.error('Polling timed out. Final state:', JSON.stringify(prediction, null, 2));
+                throw new Error('Polling timed out');
             }
     
         } catch (error) {
             console.error('Error in generateTextSync:', error);
+            console.error('Error details:', error.response ? error.response.data : error.message);
             alert(errorMessage);
             throw error;
         }
     },
-    
+
     async checkStatus(id) {
         try {
             const response = await axios.get(
