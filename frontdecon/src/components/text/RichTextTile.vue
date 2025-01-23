@@ -124,7 +124,6 @@ export default {
         },
         handleUpdateContentFromEditor(newContent) {
             if (this.lockContentUpdates == false) {
-                console.log("handleUpdateFromEditor:" + newContent);
                 this.content = newContent;
                 if (this.isPinned) {
                     this.$store.commit('updatePinnedItem', { id: this.myKey, content: this.content, header: this.header });

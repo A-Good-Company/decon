@@ -38,7 +38,6 @@ export default {
     });
 
     watch(() => props.tileContent, (newVal) => {
-      console.log("tilecontent changed")
       if (newVal !== markdown.value) {
         markdown.value = newVal;
       }
