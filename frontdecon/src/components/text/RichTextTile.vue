@@ -9,7 +9,7 @@
             <v-btn density="default" flat class="mx-1" size="small" color="blue" @click="handleGenerateText">{{
                 selectedContent.length > 0 ? 'Copy To New' : 'AI-Complete' }}</v-btn>
             <v-btn class="mx-1" flat size="small" color="green" @click="openPromptsDialog = true">My Prompts</v-btn>
-            <voice-transcriber @transcription="handleTranscription"/>
+            <voice-transcriber @transcription="handleTranscription" />
             <audio-recorder @transcription="handleTranscription" />
 
             <v-chip v-if="isPrompt" size="small" color="green-darken-4">
@@ -20,14 +20,14 @@
             </v-chip>
             <!-- <my-button type="open-dialog" @clickButton="openPromptsDialog = true">Open Dialog</my-button> -->
             <v-dialog v-model="openPromptsDialog" persistent max-width="500px" class="dark-promt-dialog">
-                <v-card class='dark-promt-card' >
+                <v-card class='dark-promt-card'>
                     <v-card-title>Prompts</v-card-title>
                     <v-card-text>
                         <v-row v-for="id in Object.keys($store.state.prompts)" :key="id">
                             <v-col cols="auto">
                                 <div>{{ id }}</div>
                                 <div class="subtitle" style="font-size: 0.8em;">{{
-        $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
+                                    $store.state.prompts[id].content.slice(0, 40) + '...' }}</div>
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="auto">
@@ -51,16 +51,20 @@
             </v-chip>
             <!-- <my-button type="default" @clickButton="saveContent">Download</my-button> -->
             <v-btn class="mx-1" size="small" flat color="purple" @click="saveContent">Download</v-btn>
+            <v-btn icon variant="text" size="small" @click="showAttachDialog" class="ml-2">
+                <v-icon>mdi-paperclip</v-icon>
+            </v-btn>
             <v-btn variant="outlined" size="small" class="mx-1 my-1 outline-white-btn" @click="handleMessageClick">
                 <v-icon size="small" class="mr-1">mdi-microphone</v-icon>
-                {{$store.state.whisperLanguage}} | 
+                {{ $store.state.whisperLanguage }} |
                 <v-icon size="small" class="mx-1">mdi-text</v-icon>
                 {{ $store.state.model }}, {{ $store.state.tokenCount }}t
             </v-btn>
+            <attach-dialog ref="attachDialog" @import-files="handleFileImport" />
             <!-- <input type="checkbox" :id="'pin-checkbox-' + id" value="Pinned" v-model="isPinned">
         <label :for="'pin-checkbox-' + id">Pin</label>
         <label v-if="isPrompt"> Prompt</label> -->
-            
+
         </v-card-text>
     </v-card>
 </template>
@@ -74,6 +78,8 @@ import MarkdownEditor from './MarkdownEditor.vue';
 import openai from '@/utils/openai'
 import VoiceTranscriber from '../VoiceTranscriber.vue'
 import AudioRecorder from '../AudioRecorder.vue'
+import AttachDialog from '../AttachDialog.vue'
+
 
 
 import ai from '@/utils/ai'
@@ -84,8 +90,10 @@ export default {
     components: {
         // 'rich-text-editor' : RichTextEditor,
         'markdown-editor': MarkdownEditor,
-        VoiceTranscriber,   
-        AudioRecorder
+        VoiceTranscriber,
+        AudioRecorder,
+        'attach-dialog': AttachDialog
+
         // 'text-process-options': TextProcessOptions,
     },
 
@@ -141,7 +149,7 @@ export default {
                 if (firstLine.length > 13) {
                     firstLine = firstLine.substring(0, 13) + '...';
                 }
-                
+
                 // Emit the header update
                 this.header = firstLine
                 this.$emit('updateHeader', this.id, firstLine);
@@ -248,9 +256,20 @@ export default {
             }
         },
         handleTitleChange(newTitle) {
-        // Emit the new title to update the tab header
+            // Emit the new title to update the tab header
             this.$emit('updateHeader', this.id, newTitle);
         },
+        showAttachDialog() {
+            this.$refs.attachDialog.showDialog()
+        },
+        handleFileImport(content) {
+            // Insert the content at the current cursor position
+            const editor = this.$refs.editor
+            const cm = editor.cm
+            const doc = cm.getDoc()
+            const cursor = doc.getCursor()
+            doc.replaceRange(content, cursor)
+        }
     },
     watch: {
         header(newHeader, oldHeader) {
