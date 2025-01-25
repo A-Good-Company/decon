@@ -69,7 +69,7 @@ const deepseekService = {
                                 // Flush any remaining reasoning content
                                 if (reasoningBuffer) {
                                     const quotedLine = `> ${reasoningBuffer}`;
-                                    callback(quotedLine + '\n');
+                                    callback(quotedLine + '\n\n');
                                     reasoningBuffer = '';
                                 }
                                 
@@ -88,7 +88,7 @@ const deepseekService = {
         // Flush any remaining reasoning content at end
         if (reasoningBuffer) {
             const quotedLine = `> ${reasoningBuffer}`;
-            callback(quotedLine + '\n');
+            callback(quotedLine + '\n\n');
         }
     },
     

@@ -289,6 +289,11 @@ export default {
       const item = this.$store.state.pinnedItems[id];
       this.addLoadedTileWithIdHeader(id, item.header, item.content);
     });
+      // Set active tab to the last pinned item
+  if (this.tiles.length > 0) {
+    const lastTile = this.tiles[this.tiles.length - 1];
+    this.activeTab = `text-${lastTile.id}`;
+  }
     // this.addLoadedTile("Decon\n---\n\nEmbedded in the Buddhist principle that all things are ultimately empty, Decon is an open-source technological tool that draws on this fundamental understanding to dissect specifics and parse out knowledge. By breaking things apart, we gain a more profound understanding of their core functions, allowing us to improve and innovate further. \n\nHarnessing the formidable capabilities of AI, Decon is a browser-based application designed to delve deep into the essence of things. Powered by OpenAI's APIs for text and automatic speech recognition (ASR), Decon applies artificial intelligence to analyse, decipher, and interpret data. For the dissection of audio into its primary components, it utilizes the Replicate API, providing a holistic and comprehensive understanding of the constituent elements. \n\nWith Decon, the pursuit of knowledge isn't about accumulation but about reduction, bringing us one step closer to genuine understanding and ingenious discovery.\n\nHowever, with great power comes great responsibility. Through Decon, you are accessing one of the most potent tools humans have ever created. Therefore, we urge you to utilize this resource with care, respect, and good intentions, always striving for the betterment of all beings.\n\n#### Translation in Hinglish\n\n")
   },
   beforeUnmount() {
