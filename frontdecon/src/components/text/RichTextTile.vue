@@ -51,7 +51,7 @@
             </v-chip>
             <!-- <my-button type="default" @clickButton="saveContent">Download</my-button> -->
             <v-btn class="mx-1" size="small" flat color="purple" @click="saveContent">Download</v-btn>
-            <v-btn icon variant="text" size="small" @click="showAttachDialog" class="ml-2">
+            <v-btn icon variant="text" size="small" @click="showAttachDialog" class="ml-2 white-btn">
                 <v-icon>mdi-paperclip</v-icon>
             </v-btn>
             <v-btn variant="outlined" size="small" class="mx-1 my-1 outline-white-btn" @click="handleMessageClick">
@@ -242,8 +242,8 @@ export default {
                 this.tileVariant = 'outlined';
                 this.tileColor = 'purple';
             } else if (!this.isPinned && this.isPrompt) {
-                this.tileVariant = 'elevated';
-                this.tileColor = 'light-green-lighten-5';
+                this.tileVariant = 'outlined';
+                this.tileColor = 'green-darken-5';
             } else {
                 this.tileVariant = 'outlined';
                 this.tileColor = 'default';
@@ -263,12 +263,8 @@ export default {
             this.$refs.attachDialog.showDialog()
         },
         handleFileImport(content) {
-            // Insert the content at the current cursor position
-            const editor = this.$refs.editor
-            const cm = editor.cm
-            const doc = cm.getDoc()
-            const cursor = doc.getCursor()
-            doc.replaceRange(content, cursor)
+            // Insert at the beginning
+            this.content = content + '\n\n' + this.content;
         }
     },
     watch: {
@@ -350,4 +346,9 @@ h3 {
     padding: 20px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
+
+:deep(.dark-mode) .attach-button .v-icon {
+  color: white !important;
+}
+
 </style>

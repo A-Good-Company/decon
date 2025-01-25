@@ -30,6 +30,10 @@
     border: 1px solid var(--white);
 }
 
+.dark-mode .white-btn {
+    color: var(--white);
+}
+
 .dark-mode .dark-outline-card > .v-card{
     border: 1px solid var(--gray);
 }
@@ -168,4 +172,6 @@
     padding: 0 !important;
 }
   
-
+#mdeditor {
+    scroll-behavior: smooth;
+  }
