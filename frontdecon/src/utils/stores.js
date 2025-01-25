@@ -27,6 +27,7 @@ export default createStore({
     openAIKey: store.get('openAIKey') || process.env.VUE_APP_OPENAI_DEFAULT_KEY,
     replicateKey: store.get('replicateKey') || process.env.VUE_APP_REPLICATE_DEFAULT_KEY,
     anthropicKey: process.env.VUE_APP_ANTHROPIC_DEFAULT_KEY,
+    deepseekKey: store.get('deepseekKey') || process.env.VUE_APP_DEEPSEEK_DEFAULT_KEY,
     isOpenAICharity: store.get('isOpenAICharity') || true,
     isReplicateCharity: store.get('isReplicateCharity') || true,
     tokenCount: store.get('tokenCount') || 4000,
@@ -130,5 +131,14 @@ export default createStore({
       state.enableSrtSubs = enableSrtSubs
       store.set('enableSrtSubs', enableSrtSubs)
     },
+    updateDeepseekKey(state, key) {
+      if (key && key.trim() !== '') {
+          state.deepseekKey = key;
+          store.set('deepseekKey', key);
+      } else {
+          state.deepseekKey = process.env.VUE_APP_DEEPSEEK_DEFAULT_KEY;
+          store.set('deepseekKey', process.env.VUE_APP_DEEPSEEK_DEFAULT_KEY);
+      }
+  }
   }
 })
