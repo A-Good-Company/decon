@@ -24,13 +24,12 @@ jobs:
       working-directory: ./frontdecon
       run: npm run build
 
-    - name: Deploy via SFTP/SSH
+    - name: Deploy via SSH
       uses: easingthemes/ssh-deploy@v4.1.8
       with:
-        server: ${{ secrets.CPANEL_HOST }}
-        username: ${{ secrets.CPANEL_USER }}
-        ssh-private-key: ${{ secrets.CPANEL_SSH_PVT_KEY }}
-        known-hosts: ${{ secrets.CPANEL_HOST_KEY }}
-        local-path: "./frontdecon/dist/*"
-        remote-path: "./public_html/betadecon.iverse.space/"
-        delete-extra-files: true
+        SSH_PRIVATE_KEY: ${{ secrets.CPANEL_SSH_PVT_KEY }}
+        REMOTE_HOST: ${{ secrets.CPANEL_HOST }}
+        REMOTE_USER: ${{ secrets.CPANEL_USER }}
+        SOURCE: "./frontdecon/dist/"
+        TARGET: "./public_html/betadecon.iverse.space/"
+        ARGS: "-rlgoDzvc -i --delete"
