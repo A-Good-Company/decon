@@ -17,9 +17,11 @@ jobs:
         node-version: 16
 
     - name: Install dependencies
+      working-directory: ./frontdecon
       run: npm install
 
     - name: Build project
+      working-directory: ./frontdecon
       run: npm run build
 
     - name: Deploy to cPanel
@@ -28,6 +30,6 @@ jobs:
         server: ${{ secrets.CPANEL_HOST }}
         username: ${{ secrets.CPANEL_USER }}
         password: ${{ secrets.CPANEL_PASSWORD }}
-        local-dir: ./dist/
+        local-dir: ./frontdecon/dist/
         server-dir: public_html/betadecon.iverse.space/
         delete-remote-files: true
