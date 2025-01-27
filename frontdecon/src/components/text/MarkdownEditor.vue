@@ -23,6 +23,7 @@ export default {
       },
     });
 
+
     onMounted(() => {
       function updateSelectedText() {
         var selectionRange = window.getSelection();
@@ -45,11 +46,6 @@ export default {
 
     watch(markdown, (content) => {
       emit('updateContent', content)
-
-      //  Scroll to end when markdown content changes
-      if (mdeditor.value) {
-        mdeditor.value.$el.scrollTop = mdeditor.value.$el.scrollHeight;
-      }
     });
 
     watch(() => props.readonly, (newVal) => {
@@ -62,6 +58,14 @@ export default {
       mdeditor
     }
   },
+  methods: {
+    scrollToBottom() {
+      const scroller = this.$el.querySelector('.cm-scroller');
+      if (scroller) {
+        scroller.scrollTop = scroller.scrollHeight;
+      }
+    }
+  }
 }
 </script>
 
@@ -86,5 +90,16 @@ export default {
 
 .mdeditor p {
   margin: 2px;
+}
+
+.cm-scroller {
+  overflow: auto;
+  contain: content;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.cm-content {
+  pointer-events: auto;
 }
 </style>

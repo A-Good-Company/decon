@@ -1,7 +1,7 @@
 <template>
     <v-card class="rich-text-tile mx-1 my-1" :variant="tileVariant" :color="tileColor">
         <v-card-text>
-            <markdown-editor class="markdownEditor" :tileContent="content"
+            <markdown-editor ref="markdownEditor" class="markdownEditor" :tileContent="content"
                 @updateContent="handleUpdateContentFromEditor" @textSelected="handleTextSelected"
                 :readonly="isEditorReadOnly" />
             <!-- <my-button type="close" @clickButton="close">Close</my-button> -->
@@ -178,6 +178,8 @@ export default {
                     await ai.generateText(autoCompletePrompt + this.content, (chunkContent) => {
                         this.lockContentUpdates = false;
                         this.content += chunkContent;
+                        this.$nextTick(() => this.$refs.markdownEditor.scrollToBottom());
+
                     }).finally(() => this.lockContentUpdates = false);
                 } catch (error) {
                     console.error('Error during text generation:', error);
