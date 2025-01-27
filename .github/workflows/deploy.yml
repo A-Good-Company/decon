@@ -24,16 +24,13 @@ jobs:
       working-directory: ./frontdecon
       run: npm run build
 
-    - name: Deploy to cPanel via SSH
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+    - name: Deploy via SFTP/SSH
+      uses: easingthemes/sftp-deploy@v2.2.11
       with:
         server: ${{ secrets.CPANEL_HOST }}
         username: ${{ secrets.CPANEL_USER }}
-        ssh-key: ${{ secrets.CPANEL_SSH_PVT_KEY }}
-        server-known-hosts: ${{ secrets.CPANEL_HOST_KEY }}
-        protocol: sftp
-        port: 22
-        local-dir: ./frontdecon/dist/
-        server-dir: public_html/betadecon.iverse.space/
-        delete-remote-files: true
-        dangerous-clean-slate: true
+        ssh-private-key: ${{ secrets.CPANEL_SSH_PVT_KEY }}
+        known-hosts: ${{ secrets.CPANEL_HOST_KEY }}
+        local-path: "./frontdecon/dist/*"
+        remote-path: "./public_html/betadecon.iverse.space/"
+        delete-extra-files: true
