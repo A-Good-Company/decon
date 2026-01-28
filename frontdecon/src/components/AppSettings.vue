@@ -16,7 +16,9 @@
 
                         <v-select :items="['gpt-4o', 'gpt-4', 'gpt-3.5-turbo-16k-0613','gpt-4o-mini', 
                         'claude-3-5-sonnet-latest', 'claude-3-5-haiku-latest','replicate-myneuralbeagle',
-                        'deepseek-chat', 'deepseek-coder', 'deepseek-reasoner']" label="Model for Text-AI*"
+                        'deepseek-chat', 'deepseek-coder', 'deepseek-reasoner',     'deepseek/deepseek-r1',
+    'deepseek/deepseek-v3.2',
+    'deepseek/deepseek-chat-v3-0324']" label="Model for Text-AI*"
                             v-model="model" required></v-select>
                         <v-divider class="border-opacity-75" color="info"></v-divider>
 

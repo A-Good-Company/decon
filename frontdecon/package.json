@@ -21,6 +21,7 @@
     "core-js": "^3.8.3",
     "date-fns": "^3.6.0",
     "form-data": "^4.0.0",
+    "franc": "^6.2.0",
     "howler": "^2.2.4",
     "ink-mde": "^0.31.0",
     "mavon-editor": "^2.10.4",
