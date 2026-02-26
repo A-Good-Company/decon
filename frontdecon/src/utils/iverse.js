@@ -3,7 +3,7 @@ import store from '@/utils/stores';
 import { franc } from 'franc';
 
 // Configuration from AidaWidget
-const AGENT_PROD_HOST = 'https://aitut-agentbackend.azurewebsites.net';
+const AGENT_PROD_HOST = 'https://aida-agentbackend-prod.graydune-dda4d1ba.canadaeast.azurecontainerapps.io';
 const CHAT_URL = `${AGENT_PROD_HOST}/iverse_agent`;
 
 const langMap = { eng: "en", fra: "fr", ara: "ar", hin: "hi", tgl: "tl", ukr: "uk", san: "sa", nya: "ny" };
